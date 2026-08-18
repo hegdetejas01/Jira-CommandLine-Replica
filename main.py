@@ -19,12 +19,7 @@ class MainProgram:
 
     def __firstInput(self):
 
-        input1 = int(input("""
-What do you want to do?
-1. Click 1 to Login
-2. Click 2 to Register
-Click any character to Exit
-"""))
+        input1 = int(input(ps.input1))
 
         if input1 == 1: 
             self.__loginInput()
@@ -33,12 +28,7 @@ Click any character to Exit
         else: pass
 
     def __loginInput(self):
-        loginInput = int(input("""
-1. Click 1 to Login as Employee
-2. Click 2 to Login as Admin
-3. Click 3 to Go Back
-Click any charater to Exit
-"""))
+        loginInput = int(input(ps.loginInput))
 
         if loginInput == 1: pass
         elif loginInput == 2: pass
@@ -48,12 +38,7 @@ Click any charater to Exit
 
 
     def __registerInput(self):
-        registerInput = int(input("""
-1. Click 1 to Register as a Company
-2. Click 2 to Register as an Employee
-3. Click 3 to Go Back
-Click any character to Exit
-"""))
+        registerInput = int(input(ps.registerInput))
 
         if registerInput == 1: 
             orgObj = Organisation()

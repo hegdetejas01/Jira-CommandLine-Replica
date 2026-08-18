@@ -5,5 +5,5 @@ class Organisation:
 
     def registerOrg(self, dbHandlerObj: DbHandler):
         name = input(ps.getOrgName)
-        return dbHandlerObj.addOrgToDb(name)
+        return dbHandlerObj.addOrgToDb(name.strip().lower())
 
