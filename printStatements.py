@@ -1,0 +1,7 @@
+welcomeMessage = "Welcome To Jira"
+clickExitMessage = "Click any charater to Exit"
+getOrgName = "Enter the name of the organisation to register: "
+dbConnectionFailure = "Failed to Connect to DB. Restart the Program"
+orgExists = "Organisation Already Registered. Try Logging In."
+orgAddFailure = "Failed to Add to DB."
+orgAddSuccess = "Organisation successfully added to DB"
