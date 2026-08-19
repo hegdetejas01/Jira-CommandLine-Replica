@@ -12,11 +12,23 @@ class Employee:
             name = input(ps.empRegName)
             pass_ = input(ps.empRegPassword)
             cursor = dbHandlerObj.getOrg()
-            print("To Which Organisation You Belong To ?")
+            print(ps.askOrg)
             for o_id, o_name in cursor:
                 print("Click {} for {}".format(o_id,o_name.upper()))
             orgNum = int(input())
 
             return dbHandlerObj.addEmpToDb(name.lower(), self.email.lower(), pass_, orgNum)
+
+    def loginEmployee(self, dbHandlerObj: DbHandler):
+        email = input("Enter you email: ")
+        response = dbHandlerObj.checkEmpinDb(email)
+        if response:
+            pass_ = input("Enter the password: ")
+            if pass_ == dbHandlerObj.getPassword(email):
+                return 1, email
+            else: return -1, None
+        else: return 0, None
+
+
 
 

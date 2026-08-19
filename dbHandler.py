@@ -40,6 +40,11 @@ class DbHandler:
         else:
             return 0
 
+    def getPassword(self, email:str):
+        query = "SELECT emp_password FROM employee WHERE emp_email = %s"
+        self.cursor.execute(query, (email, ))
+        return self.cursor.fetchone()[0]
+
     def getOrg(self):
         query = "SELECT org_id as id, org_name FROM organisation ORDER BY id ASC"
         self.cursor.execute(query)
@@ -54,3 +59,4 @@ class DbHandler:
             return 1
         except:
             return 0
+

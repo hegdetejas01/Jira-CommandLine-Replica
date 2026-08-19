@@ -10,6 +10,8 @@ class MainProgram:
 
     def __init__(self):
         self.dbObj = DbHandler()
+        self.empObj = Employee()
+        self.OrgObj = Organisation()
         self.decoratorObj = Decorator()
 
         if self.dbObj.conn == None:
@@ -32,7 +34,18 @@ class MainProgram:
     def __loginInput(self):
         loginInput = int(input(ps.loginInput))
 
-        if loginInput == 1: pass
+        if loginInput == 1: 
+            responseNum, responseStr = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
+            if responseNum == 1:
+                self.loggedUser = responseStr
+                self.decoratorObj.message("LOGIN SUCCESSFULL")
+            elif responseNum == 0:
+                self.decoratorObj.message("USER DOESNOT EXIST. TRY REGISTERING")
+                self.__registerInput()
+            elif responseNum == -1:
+                self.decoratorObj.message("CREDENTIAL DOESNOT MATCH. TRY ONCE AGAIN")
+                self.__loginInput()
+
         elif loginInput == 2: pass
         elif loginInput == 3: 
             self.__firstInput()
@@ -43,8 +56,7 @@ class MainProgram:
         registerInput = int(input(ps.registerInput))
 
         if registerInput == 1: 
-            orgObj = Organisation()
-            response = orgObj.registerOrg(dbHandlerObj=self.dbObj)
+            response = self.orgObj.registerOrg(dbHandlerObj=self.dbObj)
 
             if response == 0:
                 print(ps.orgExists)
@@ -54,8 +66,7 @@ class MainProgram:
                 self.decoratorObj.message(ps.orgAddSuccess)
 
         elif registerInput == 2: 
-            empObj = Employee()
-            response = empObj.registerEmployee(dbHandlerObj=self.dbObj)
+            response = self.empObj.registerEmployee(dbHandlerObj=self.dbObj)
 
             if response == 0:
                 print(ps.empRegFailed)
