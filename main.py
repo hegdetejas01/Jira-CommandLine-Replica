@@ -2,6 +2,7 @@ from decorator import Decorator
 import printStatements as ps
 from organisation import Organisation
 from dbHandler import DbHandler
+from employee import Employee
 
 print()
 
@@ -9,12 +10,13 @@ class MainProgram:
 
     def __init__(self):
         self.dbObj = DbHandler()
+        self.decoratorObj = Decorator()
+
         if self.dbObj.conn == None:
             print(ps.dbConnectionFailure)
             exit()
 
-        decoratorObj = Decorator()
-        decoratorObj.message(ps.welcomeMessage)
+        self.decoratorObj.message(ps.welcomeMessage)
         self.__firstInput()
 
     def __firstInput(self):
@@ -49,9 +51,17 @@ class MainProgram:
             elif response == -1:
                 print(ps.orgAddFailure)
             elif response == 1:
-                print(ps.orgAddSuccess)
+                self.decoratorObj.message(ps.orgAddSuccess)
 
-        elif registerInput == 2: pass
+        elif registerInput == 2: 
+            empObj = Employee()
+            response = empObj.registerEmployee(dbHandlerObj=self.dbObj)
+
+            if response == 0:
+                print(ps.empRegFailed)
+            elif response == 1:
+                print(ps.empRegSuccess)
+
         elif registerInput == 3: 
             self.__firstInput()
         else: pass

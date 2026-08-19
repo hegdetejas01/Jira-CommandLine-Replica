@@ -23,3 +23,9 @@ registerInput = """
 3. Click 3 to Go Back
 Click any character to Exit
 """
+empRegEmail = "Enter the email id of the employee to register: "
+empPresent = "Employee Already Registered. Try Logging In"
+empRegName = "Enter the name of the employee: "
+empRegPassword = "Enter the password: "
+empRegFailed = "User Registration Failed"
+empRegSuccess = "User Registered Successfully"
