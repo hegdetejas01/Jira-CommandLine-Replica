@@ -32,13 +32,27 @@ class DbHandler:
                 return -1
 
     def checkEmpinDb(self, email):
-        query = "SELECT 1 FROM employee WHERE emp_email = %s LIMIT 1"
+        query = "SELECT emp_id, emp_password FROM employee WHERE emp_email = %s"
         self.cursor.execute(query, (email, ))
-        exists = self.cursor.fetchone()
-        if exists:
-            return 1
-        else:
-            return 0
+        empData = self.cursor.fetchone()
+        return empData
+
+    def checkEmpinAdm(self, empId):
+        query = "SELECT 1 FROM admin WHERE emp_id = %s and adm_type = %s"
+        self.cursor.execute(query, (empId, 'S'))
+        existsSuper = self.cursor.fetchone()
+        if existsSuper: 
+            return 'S'
+        else: 
+            query = "SELECT 1 FROM admin WHERE emp_id = %s and adm_type = %s"
+            self.cursor.execute(query, (empId, 'A'))
+            existsAdm = self.cursor.fetchone()
+            if existsAdm: 
+                return 'A'
+            else: 
+                return 'E'
+        
+            
 
     def getPassword(self, email:str):
         query = "SELECT emp_password FROM employee WHERE emp_email = %s"

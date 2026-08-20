@@ -33,26 +33,39 @@ class MainProgram:
             self.__registerInput()
         else: pass
 
+    def setSession(self, name, userType):
+        self.username = name
+        self.loggedProfile = userType
+
     def __loginInput(self):
         loginInput = int(input(ps.loginInput))
 
         if loginInput == 1: 
-            responseNum, responseStr = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
-            if responseNum == 1:
-                self.loggedUser = responseStr
-                self.decoratorObj.message(ps.empLoginSuccess)
+            responseChar, responseStr = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
+            if responseChar == 'S':
+                self.setSession(responseStr, responseChar)
+                self.decoratorObj.message("{} successfully logged in as Super Admin".format(responseStr))
 
-            elif responseNum == 0:
-                self.decoratorObj.message(ps.empDoesnotExist)
-                self.__registerInput()
-            elif responseNum == -1:
+            elif responseChar == 'A':
+                self.setSession(responseStr, responseChar)
+                self.decoratorObj.message("{} successfully logged in as General Admin".format(responseStr))
+
+            elif responseChar == 'E':
+                self.setSession(responseStr, responseChar)
+                self.decoratorObj.message("{} successfully logged in".format(responseStr))
+
+            elif responseChar == 0:
                 self.decoratorObj.message(ps.empCredMisMatch)
                 self.__loginInput()
 
-        elif loginInput == 2: pass
-        elif loginInput == 3: 
+            elif responseChar == -1:
+                self.decoratorObj.message(ps.empDoesnotExist)
+                self.__registerInput()
+
+        elif loginInput == 2:
             self.__firstInput()
-        else: pass
+            
+        else: quit()
 
 
     def __registerInput(self):

@@ -24,14 +24,22 @@ class Employee:
 
     def loginEmployee(self, dbHandlerObj: DbHandler):
         email = input("Enter you email: ")
-        response = dbHandlerObj.checkEmpinDb(email)
-        if response:
-            pass_ = input("Enter the password: ")
-            if pass_ == dbHandlerObj.getPassword(email):
-                return 1, email
-            else: return -1, None
-        else: return 0, None
+        responseDb = dbHandlerObj.checkEmpinDb(email)
+        if responseDb is not None: # means employee is in DB
 
+            passInput = input("Enter Your Password: ")
+            if responseDb[1] == passInput:
+                responseAdm = dbHandlerObj.checkEmpinAdm(responseDb[0])
+
+                self.loggedUser = email # setting the logged user name
+                self.loggedProfile = responseAdm # setting who has logged in "S", "A", "E"
+
+                return responseAdm, email
+            
+            else: 
+                return 0, None # incorrect credentials
+        else: 
+            return -1, None # employee donot exists
 
 class Admin(Employee):
     def checkAdmins(self, emp_email, dbHandlerObj:DbHandler):

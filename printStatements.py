@@ -13,8 +13,7 @@ Click any character to Exit
 """
 loginInput = """
 1. Click 1 to Login as Employee
-2. Click 2 to Login as Admin
-3. Click 3 to Go Back
+2. Click 2 to Go Back
 Click any charater to Exit
 """
 registerInput = """
