@@ -3,6 +3,7 @@ import printStatements as ps
 from organisation import Organisation
 from dbHandler import DbHandler
 from employee import Employee
+from employee import Admin
 
 print()
 
@@ -11,8 +12,9 @@ class MainProgram:
     def __init__(self):
         self.dbObj = DbHandler()
         self.empObj = Employee()
-        self.OrgObj = Organisation()
+        self.orgObj = Organisation()
         self.decoratorObj = Decorator()
+        self.admObj = Admin()
 
         if self.dbObj.conn == None:
             print(ps.dbConnectionFailure)
@@ -38,12 +40,13 @@ class MainProgram:
             responseNum, responseStr = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
             if responseNum == 1:
                 self.loggedUser = responseStr
-                self.decoratorObj.message("LOGIN SUCCESSFULL")
+                self.decoratorObj.message(ps.empLoginSuccess)
+
             elif responseNum == 0:
-                self.decoratorObj.message("USER DOESNOT EXIST. TRY REGISTERING")
+                self.decoratorObj.message(ps.empDoesnotExist)
                 self.__registerInput()
             elif responseNum == -1:
-                self.decoratorObj.message("CREDENTIAL DOESNOT MATCH. TRY ONCE AGAIN")
+                self.decoratorObj.message(ps.empCredMisMatch)
                 self.__loginInput()
 
         elif loginInput == 2: pass
@@ -66,12 +69,13 @@ class MainProgram:
                 self.decoratorObj.message(ps.orgAddSuccess)
 
         elif registerInput == 2: 
-            response = self.empObj.registerEmployee(dbHandlerObj=self.dbObj)
+            responseNum, responseEmail = self.empObj.registerEmployee(dbHandlerObj=self.dbObj)
 
-            if response == 0:
+            if responseNum == 0:
                 print(ps.empRegFailed)
-            elif response == 1:
+            elif responseNum == 1:
                 print(ps.empRegSuccess)
+                self.admObj.checkAdmins(self, responseEmail, dbHandlerObj=self.dbObj)
 
         elif registerInput == 3: 
             self.__firstInput()

@@ -12,11 +12,11 @@ class DbHandler:
             self.conn = conn
             self.cursor = self.conn.cursor()
 
-        except mysql.connector.Error as err:
+        except:
             self.conn = None
 
     def addOrgToDb(self, name):
-        query = "SELECT 1 FROM organisation WHERE org_name = %s LIMIT 1"
+        query = "SELECT 1 FROM organisation WHERE org_name = %s"
         self.cursor.execute(query, (name, ))
         exists = self.cursor.fetchone()
         if exists:
@@ -57,6 +57,17 @@ class DbHandler:
             self.cursor.execute(query, insertTuple)
             self.conn.commit()
             return 1
+        except:
+            return 0
+
+    def checkAdminsInDB(self, emp_email):
+        try:
+            query = "SELECT COUNT(*) FROM employee WHERE org_id = (SELECT org_id FROM employee WHERE emp_email = %s)"
+            self.cursor.execute(query, (emp_email, ))
+            exists = self.cursor.fetchone()[0]
+            if exists == 0:
+                return 1
+            else: return 0
         except:
             return 0
 
