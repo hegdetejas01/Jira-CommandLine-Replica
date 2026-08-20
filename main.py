@@ -75,7 +75,9 @@ class MainProgram:
                 print(ps.empRegFailed)
             elif responseNum == 1:
                 print(ps.empRegSuccess)
-                self.admObj.checkAdmins(self, responseEmail, dbHandlerObj=self.dbObj)
+                responseAddAdmin = self.admObj.checkAdmins(responseEmail, dbHandlerObj=self.dbObj)
+                if responseAddAdmin == 1: 
+                    self.decoratorObj.message("SUCCESSFULLY ADDED YOU AS SUPER ADMIN")
 
         elif registerInput == 3: 
             self.__firstInput()

@@ -7,3 +7,6 @@ class Organisation:
         name = input(ps.getOrgName)
         return dbHandlerObj.addOrgToDb(name.strip().lower())
 
+    def getOrg(self, dbHandlerObj: DbHandler):
+        return dbHandlerObj.getOrg()
+

@@ -65,9 +65,25 @@ class DbHandler:
             query = "SELECT COUNT(*) FROM employee WHERE org_id = (SELECT org_id FROM employee WHERE emp_email = %s)"
             self.cursor.execute(query, (emp_email, ))
             exists = self.cursor.fetchone()[0]
-            if exists == 0:
+            if exists == 1:
                 return 1
-            else: return 0
+            else:
+                return 0
         except:
             return 0
 
+    def addAdminToDb(self, email, adminType):
+        try:
+            query = "SELECT emp_id FROM employee WHERE emp_email = %s"
+            self.cursor.execute(query, (email, ))
+            empId = self.cursor.fetchone()[0]
+
+            query = "INSERT INTO admin (adm_type, emp_id) VALUES (%s, %s)"
+            insertTuple = (adminType, empId)
+            self.cursor.execute(query, insertTuple)
+            self.conn.commit() 
+
+            return 1
+
+        except:
+            return 0

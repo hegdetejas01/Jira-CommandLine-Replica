@@ -1,6 +1,7 @@
 from dbHandler import DbHandler
 import printStatements as ps
 from decorator import Decorator
+from organisation import Organisation
 
 class Employee:
     
@@ -12,7 +13,8 @@ class Employee:
         else:
             name = input(ps.empRegName)
             pass_ = input(ps.empRegPassword)
-            cursor = dbHandlerObj.getOrg()
+
+            cursor = Organisation().getOrg(dbHandlerObj)
             print(ps.askOrg)
             for o_id, o_name in cursor:
                 print("Click {} for {}".format(o_id,o_name.upper()))
@@ -33,6 +35,11 @@ class Employee:
 
 class Admin(Employee):
     def checkAdmins(self, emp_email, dbHandlerObj:DbHandler):
-        response = dbHandlerObj.checkAdminsInDB(emp_email)
-        if response == 1:
+        responseAdminCheck = dbHandlerObj.checkAdminsInDB(emp_email)
+        if responseAdminCheck == 1:
             Decorator().message("You are the first employee from your ORGANISATION to get registered. Therefore, assigning you as the SUPER ADMIN")
+            responseAdmAddCheck = dbHandlerObj.addAdminToDb(emp_email, adminType='S')
+            return responseAdmAddCheck
+        
+        elif responseAdminCheck == 0:
+            return 0
