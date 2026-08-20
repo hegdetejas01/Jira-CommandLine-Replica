@@ -40,11 +40,11 @@ class MainProgram:
     def __loginInput(self):
         loginInput = int(input(ps.loginInput))
 
-        if loginInput == 1: 
+        if loginInput == 1: # employee login
             responseChar, responseStr = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
             if responseChar == 'S':
                 self.setSession(responseStr, responseChar)
-                self.decoratorObj.message("{} successfully logged in as Super Admin".format(responseStr))
+                self.decoratorObj.message(ps.superAdmLoginSuccess.format(responseStr))
 
             elif responseChar == 'A':
                 self.setSession(responseStr, responseChar)
@@ -62,7 +62,7 @@ class MainProgram:
                 self.decoratorObj.message(ps.empDoesnotExist)
                 self.__registerInput()
 
-        elif loginInput == 2:
+        elif loginInput == 2: # go back
             self.__firstInput()
             
         else: quit()
@@ -71,7 +71,7 @@ class MainProgram:
     def __registerInput(self):
         registerInput = int(input(ps.registerInput))
 
-        if registerInput == 1: 
+        if registerInput == 1:  # register organisation
             response = self.orgObj.registerOrg(dbHandlerObj=self.dbObj)
 
             if response == 0:
@@ -81,7 +81,7 @@ class MainProgram:
             elif response == 1:
                 self.decoratorObj.message(ps.orgAddSuccess)
 
-        elif registerInput == 2: 
+        elif registerInput == 2:  # register employee
             responseNum, responseEmail = self.empObj.registerEmployee(dbHandlerObj=self.dbObj)
 
             if responseNum == 0:
@@ -90,7 +90,7 @@ class MainProgram:
                 print(ps.empRegSuccess)
                 responseAddAdmin = self.admObj.checkAdmins(responseEmail, dbHandlerObj=self.dbObj)
                 if responseAddAdmin == 1: 
-                    self.decoratorObj.message("SUCCESSFULLY ADDED YOU AS SUPER ADMIN")
+                    self.decoratorObj.message(ps.superAdmRegisterSuccess)
 
         elif registerInput == 3: 
             self.__firstInput()

@@ -12,7 +12,7 @@ What do you want to do?
 Click any character to Exit
 """
 loginInput = """
-1. Click 1 to Login as Employee
+1. Click 1 to Login
 2. Click 2 to Go Back
 Click any charater to Exit
 """
@@ -32,3 +32,5 @@ askOrg = "To Which Organisation You Belong To ?"
 empLoginSuccess = "LOGIN SUCCESSFULL"
 empDoesnotExist = "USER DOESNOT EXIST. TRY REGISTERING"
 empCredMisMatch = "CREDENTIAL DOESNOT MATCH. TRY ONCE AGAIN"
+superAdmRegisterSuccess = "SUCCESSFULLY ADDED YOU AS SUPER ADMIN"
+superAdmLoginSuccess = "{} successfully logged in as Super Admin"

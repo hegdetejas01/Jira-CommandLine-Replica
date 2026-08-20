@@ -9,4 +9,3 @@ class Organisation:
 
     def getOrg(self, dbHandlerObj: DbHandler):
         return dbHandlerObj.getOrg()
-
