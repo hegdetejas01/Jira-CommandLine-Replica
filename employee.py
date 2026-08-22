@@ -20,6 +20,18 @@ class Employee:
         self.profile = None
         return 1 
     
+    def exitSession(self):
+        self.profile = None
+        self.name = None
+        return 1
+            
+    def loggedInOptions(self):
+        userInput = input("1. Click 1 to logout: ").strip()
+        if userInput == '1': 
+            name = self.name
+            response = self.exitSession()
+            if response: print(ps.logoutSuccess.format(name))
+
     def registerEmployee(self, dbHandlerObj: DbHandler):
         """
         Input: DB handler object
@@ -56,18 +68,6 @@ class Employee:
             elif response == 0:
                 print(ps.empRegFailed)
                 return 0
-
-    def exitSession(self):
-        self.profile = None
-        self.name = None
-        return 1
-            
-    def loggedInOptions(self):
-        userInput = input("1. Click 1 to logout: ").strip()
-        if userInput == '1': 
-            name = self.name
-            response = self.exitSession()
-            if response: print(ps.logoutSuccess.format(name))
 
     def loginEmployee(self, dbHandlerObj: DbHandler):
         """
