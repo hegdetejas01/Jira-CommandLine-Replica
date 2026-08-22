@@ -76,5 +76,4 @@ class MainProgram:
 
         else: pass
 
-
 obj = MainProgram()

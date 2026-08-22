@@ -1,10 +1,21 @@
 welcomeMessage = "Welcome To Jira"
 clickExitMessage = "Click any charater to Exit"
 getOrgName = "Enter the name of the organisation to register: "
+adminSuccessAdd = "Employee with ID = {} Successfully added as Admin for Org Id = {}"
 dbConnectionFailure = "Failed to Connect to DB. Restart the Program"
 orgExists = "Organisation Already Registered. Try Logging In."
 orgAddFailure = "Failed to Add to DB."
 orgAddSuccess = "Organisation successfully added to DB"
+insufficientEmpForAdm = "There are insufficent employees to be assigned as Admin..."
+returnSuperAdmMainMenu = "Returning to main menu..."
+maxAdmLimit = "Maximum Admin Limit for your Organisation Reached.! Click 1 to edit the admins (if needed)"
+superAdmMainMenu = """
+1. Click 1 to assign admins
+2. Click 2 to edit admins
+3. Click 3 to create project
+4. Click 4 to edit project information
+5. Click 5 to Logout
+"""
 input1 = """
 What do you want to do?
 1. Click 1 to Login
@@ -24,8 +35,10 @@ Click any character to Exit
 """
 empRegEmail = "Enter the email id of the employee to register: "
 empPresent = "Employee Already Registered. Try Logging In"
+printForAdmSelection = "Click {} to assign as admin {}"
+empAsAdmin = "Whom do you want to select as an admin? "
 empRegName = "Enter the name of the employee: "
-empRegPassword = "Enter the password: "
+empPassword = "Enter the password: "
 empRegFailed = "User Registration Failed"
 empRegSuccess = "User Registered Successfully"
 askOrg = "To Which Organisation You Belong To ?"
@@ -37,3 +50,5 @@ superAdminAssigned =  "You are the first employee from your ORGANISATION to get 
 adminLoginSuccess = "{} successfully logged in as General Admin"
 empLoginSuccess = "{} successfully logged in"
 logoutSuccess = "SUCCESSFULLY LOGGED-OUT FROM {} ACCOUNT"
+printOrg = "Click {} for {}"
+empLoginEmail = "Enter you email to Login: "
