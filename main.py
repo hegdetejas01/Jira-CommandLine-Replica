@@ -25,11 +25,11 @@ class MainProgram:
 
     def __firstInput(self):
 
-        input1 = int(input(ps.input1))
+        input1 = input(ps.input1).strip()
 
-        if input1 == 1: 
+        if input1 == '1': 
             self.__loginInput()
-        elif input1 == 2: 
+        elif input1 == '2': 
             self.__registerInput()
         else: pass
 
@@ -38,62 +38,42 @@ class MainProgram:
         self.loggedProfile = userType
 
     def __loginInput(self):
-        loginInput = int(input(ps.loginInput))
+        loginInput = input(ps.loginInput).strip()
 
-        if loginInput == 1: # employee login
-            responseChar, responseStr = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
-            if responseChar == 'S':
-                self.setSession(responseStr, responseChar)
-                self.decoratorObj.message(ps.superAdmLoginSuccess.format(responseStr))
-
-            elif responseChar == 'A':
-                self.setSession(responseStr, responseChar)
-                self.decoratorObj.message("{} successfully logged in as General Admin".format(responseStr))
-
-            elif responseChar == 'E':
-                self.setSession(responseStr, responseChar)
-                self.decoratorObj.message("{} successfully logged in".format(responseStr))
-
-            elif responseChar == 0:
-                self.decoratorObj.message(ps.empCredMisMatch)
+        if loginInput == '1': # employee login
+            response = self.empObj.loginEmployee(dbHandlerObj=self.dbObj)
+            if response == 1:
+                self.LoggedIn = True
+            elif response == -1:
                 self.__loginInput()
-
-            elif responseChar == -1:
-                self.decoratorObj.message(ps.empDoesnotExist)
+            elif response == 0:
                 self.__registerInput()
 
-        elif loginInput == 2: # go back
+        elif loginInput == '2': # go back
             self.__firstInput()
             
         else: quit()
 
-
     def __registerInput(self):
-        registerInput = int(input(ps.registerInput))
+        registerInput = input(ps.registerInput).strip()
 
-        if registerInput == 1:  # register organisation
+        if registerInput == '1':  # register organisation
             response = self.orgObj.registerOrg(dbHandlerObj=self.dbObj)
+            if response == 1:
+                self.__loginInput()
+            elif response == 0:
+                self.__registerInput()
 
-            if response == 0:
-                print(ps.orgExists)
-            elif response == -1:
-                print(ps.orgAddFailure)
-            elif response == 1:
-                self.decoratorObj.message(ps.orgAddSuccess)
+        elif registerInput == '2':  # register employee
+            response = self.empObj.registerEmployee(dbHandlerObj=self.dbObj)
+            if response == 1: 
+                self.__loginInput()
+            elif response == 0:
+                self.__registerInput()
 
-        elif registerInput == 2:  # register employee
-            responseNum, responseEmail = self.empObj.registerEmployee(dbHandlerObj=self.dbObj)
-
-            if responseNum == 0:
-                print(ps.empRegFailed)
-            elif responseNum == 1:
-                print(ps.empRegSuccess)
-                responseAddAdmin = self.admObj.checkAdmins(responseEmail, dbHandlerObj=self.dbObj)
-                if responseAddAdmin == 1: 
-                    self.decoratorObj.message(ps.superAdmRegisterSuccess)
-
-        elif registerInput == 3: 
+        elif registerInput == '3': 
             self.__firstInput()
+
         else: pass
 
 
