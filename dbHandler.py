@@ -36,6 +36,17 @@ class DbHandler:
             except:
                 return -1
 
+    def setLoginDateTime(self, email):
+        """
+        Updates the last login time of the employee
+        """
+        query = "UPDATE employee SET emp_lastlogin = NOW() WHERE emp_email = %s"
+        try:
+            self.cursor.execute(query, (email, ))
+            self.conn.commit()
+        except:
+            pass
+
     def checkEmpinDb(self, email):
         query = "SELECT emp_id, emp_password FROM employee WHERE emp_email = %s"
         self.cursor.execute(query, (email, ))
@@ -118,3 +129,4 @@ class DbHandler:
 
         except:
             return 0
+

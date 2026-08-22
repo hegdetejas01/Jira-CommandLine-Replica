@@ -5,12 +5,17 @@ from organisation import Organisation
 
 class Employee:
 
-    def setSession(self, name, profile):
+    def setSession(self, name, profile, dbhandlerobj: DbHandler):
         """
         sets username and profile for the logged user
         """
         self.name = name
         self.profile = profile
+
+        response = dbhandlerobj.setLoginDateTime(name)
+        if response == 1:
+            print("Employee Login Time changed successfully")
+        else: print("Unable to Update Login Time")
 
     def logoutEmployee(self):
         """
@@ -73,9 +78,9 @@ class Employee:
         """
         Input: a db handler object
         Output:
-            1 : For Successfull Login
-            0 : For Employee Not in DB - call register page
-            -1 : For credentials mismatch - call login page
+            Return 1 : For Successfull Login
+            Return 0 : If Employee Not present in DB - call register page
+            Return -1 : For credentials mismatch - call login page
         """
         email = input("Enter you email: ")
         responseDb = dbHandlerObj.checkEmpinDb(email)
@@ -85,7 +90,7 @@ class Employee:
             if responseDb[1] == passInput:
                 responseAdm = dbHandlerObj.checkEmpinAdm(responseDb[0]) # gets S E or A
 
-                self.setSession(email, responseAdm)
+                self.setSession(email, responseAdm, dbHandlerObj)
 
                 if responseAdm == 'S':
                     Decorator().message(ps.superAdmLoginSuccess.format(email))
