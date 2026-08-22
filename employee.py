@@ -11,11 +11,7 @@ class Employee:
         """
         self.name = name
         self.profile = profile
-
-        response = dbhandlerobj.setLoginDateTime(name)
-        if response == 1:
-            print("Employee Login Time changed successfully")
-        else: print("Unable to Update Login Time")
+        dbhandlerobj.setLoginDateTime(name)
 
     def logoutEmployee(self):
         """
@@ -23,15 +19,15 @@ class Employee:
         """
         self.name = None
         self.profile = None
-        return 1 
-    
-    def exitSession(self):
-        self.profile = None
-        self.name = None
         return 1
-            
+
+    def exitSession(self):
+        self.name = None
+        self.profile = None
+        return 1
+    
     def loggedInOptions(self):
-        userInput = input("1. Click 1 to logout: ").strip()
+        userInput = input("Click 1 to logout").strip()
         if userInput == '1': 
             name = self.name
             response = self.exitSession()
@@ -125,3 +121,6 @@ class Admin(Employee):
         
         elif responseAdminCheck == 0:
             return 0
+
+class SuperAdmin(Admin):
+    pass
