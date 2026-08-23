@@ -1,5 +1,6 @@
 from decorator import Decorator
 from dbHandler import DbHandler
+import printStatements as ps
 
 class Project:
 
@@ -8,48 +9,47 @@ class Project:
         self.manager = managerId
 
     def createProject(self, orgid, dbhandlerobj: DbHandler):
-        proName = input("Enter the project name to create: ")
-        print("Who is the manager for this project? ")
+        proName = input(ps.proName)
+        print(ps.manId)
         empData = dbhandlerobj.getEmployeesEligible(org_id=orgid, caller='P')
 
         empIds = []
         for data in empData:
             if data[2] != 'S':
-                print("I am inide count emp")
                 empIds.append(data[0])
 
         if len(empIds) == 0: 
-            print("No Employees Present To Add them as managers")
+            print(ps.noManForPro)
             return 1
         
         for data in empData:
-            print("Indide For")
             if data[2] != 'S':
-                print('Inside if of For')
-                print("Click {} to assign {} ({}) as manager to the project".format(data[0], data[1], data[3]))
+                print(ps.manToPro.format(data[0], data[1], data[3]))
 
-        print("Click x or X to exit...")
+        print(ps.exitClick)
         i = input()
-        if int(i) in empIds:
-            response = dbhandlerobj.createProjectinDb(proName, int(i))
-            if response: 
-                print("Project Successfully Added to DB...") 
-                # return 1 # call mainmenu
-                return 1
-            else: 
-                print("Failed to add project to DB... Try Again...") 
-                # return 0 # again call create project
+
+        try:
+            if int(i) in empIds:
+                response = dbhandlerobj.createProjectinDb(proName, int(i))
+                if response: 
+                    print(ps.proSuccessToDb) 
+                    # return 1 # call mainmenu
+                    return 1
+                else: 
+                    print(ps.proFailedToDb) 
+                    # return 0 # again call create project
+                    return 0
+
+            else:
+                print(ps.invalidInput)
+                # return -1 # call createproject
                 return 0
 
-        elif i in ['X','x']:
+        except:
             # return 'x' # call mainmenu
-            print("Returning to main menu...")
+            print(ps.returnSuperAdmMainMenu)
             return 1
-
-        else:
-            print("Invalid Input. Try Again... ")
-            # return -1 # call createproject
-            return 0
 
     def editProject(self, dbhandlerobj:DbHandler):
         pass

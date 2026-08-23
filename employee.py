@@ -153,30 +153,30 @@ class SuperAdmin(Admin):
     def editAdmins(self, dbhandlerobj : DbHandler):
         admNum = dbhandlerobj.checkAdminsInDB(org_id=self.orgId, caller='S')
         if admNum == 0: 
-            i = input("No Admins in your organisation yet...")
+            i = input(ps.noAdmYet)
             self.displayMenu(dbhandlerobj)
 
         if admNum > 0:
             admIds = []
             adms = dbhandlerobj.getAdm(self.orgId)
-            print("Whom do you want to remove as Admin? ")
+            print(ps.admRemoveId)
             for data in adms:
                 admIds.append(data[0])
-                print("Click {} to remove {} ({})".format(data[0], data[1], data[2]))
-            print('Click X or x to go back..!')
+                print(ps.editAdmOp.format(data[0], data[1], data[2]))
+            print(ps.exitClick)
 
             i = input()
-            if int(i) in admIds:
-                response = dbhandlerobj.removeAdm(admId=int(i))
-                if response:
-                    print('Successfully removed the adm with adm id = {}'.format(i))
-                else: print("Failed to remove the admin... Try Again")
+            try:
+                if int(i) in admIds:
+                    response = dbhandlerobj.removeAdm(admId=int(i))
+                    if response:
+                        print(ps.admRemoveSuccess.format(i))
+                    else: print()
+                else:
+                    print(ps.invalidInput)
 
-            elif i in ['X', 'x']:
-                print("Displaying Main Menu...")
-
-            else:
-                print("Eployee ID invalid... Try Again")
+            except:
+                print(ps.returnSuperAdmMainMenu)
 
             self.displayMenu(dbhandlerobj)
 
