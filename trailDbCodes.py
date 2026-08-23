@@ -55,3 +55,9 @@ dbo = DbHandler()
 # for i in dbo.cursor:
 #     if i[2] != 'S':
 #         print(i[0],i[1], i[2])
+
+orgId= 1
+query = "select t1.adm_id, t2.emp_email, t2.emp_name from admin t1 inner join employee t2 on t1.emp_id = t2.emp_id WHERE t2.org_id = %s AND t1.adm_type='A'"
+dbo.cursor.execute(query, (orgId, ))
+data = dbo.cursor.fetchall()
+print(data)

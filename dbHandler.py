@@ -130,6 +130,7 @@ class DbHandler:
                 return 0
 
         elif caller == 'S':
+            # Return the total number of Admin in the organisation (This doesnot include Super Admins)
             query = "select count(*) from admin t1 inner join employee t2 on t1.emp_id = t2.emp_id WHERE t2.org_id = %s AND t1.adm_type='A'"
             try:
                 self.cursor.execute(query, (org_id, ))
@@ -173,3 +174,23 @@ class DbHandler:
 
         except:
             return 0
+
+    def getAdm(self, orgId=None, caller = None):
+        if caller is None:
+            query = "select t1.adm_id, t2.emp_email, t2.emp_name from admin t1 inner join employee t2 on t1.emp_id = t2.emp_id WHERE t2.org_id = %s AND t1.adm_type='A'"
+
+            try:
+                self.cursor.execute(query, (orgId, ))
+                return self.cursor.fetchall()
+            except:
+                return None
+
+    def removeAdm(self, admId=None, caller=None):
+        if caller is None:
+            query = "DELETE FROM admin WHERE adm_id = %s"
+            try:
+                self.cursor.execute(query, (admId, ))
+                self.conn.commit()
+                return 1
+            except:
+                return 0
