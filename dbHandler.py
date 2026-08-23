@@ -148,13 +148,14 @@ class DbHandler:
         except:
             return None
         
-    def getEmployeesEligibleAdmin(self, org_id):
-        query = "select t1.emp_id, t1.emp_email, t2.adm_type from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s"
-        try:
-            self.cursor.execute(query, (org_id, ))
-            return self.cursor
-        except:
-            return None
+    def getEmployeesEligible(self, org_id, caller=None):
+        if caller in ['S', 'P']:
+            query = "select t1.emp_id, t1.emp_email, t2.adm_type, t1.emp_name from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s"
+            try:
+                self.cursor.execute(query, (org_id, ))
+                return self.cursor
+            except:
+                return None
 
     def addAdminToDb(self, email, adminType):
         """
@@ -192,5 +193,12 @@ class DbHandler:
                 self.cursor.execute(query, (admId, ))
                 self.conn.commit()
                 return 1
-            except:
-                return 0
+            except: return 0
+
+    def createProjectinDb(self, prName, manId):
+        query =  "INSERT INTO project (pr_name, emp_id) VALUES (%s, %s)"
+        try:
+            self.cursor.execute(query, (prName, manId))
+            self.conn.commit()
+            return 1
+        except: return 0

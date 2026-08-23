@@ -2,6 +2,7 @@ from dbHandler import DbHandler
 import printStatements as ps
 from decorator import Decorator
 from organisation import Organisation
+from project import Project
 
 class Employee:
 
@@ -109,10 +110,12 @@ class Admin(Employee):
     def __init__(self, name=None, profile=None, orgId=None):
         super().__init__(name, profile, orgId)
 
-    def createProjects(self):
-        pass
+    def createProjects(self, dbhandlerobj:DbHandler, caller=None):
+        response = Project().createProject(self.orgId, dbhandlerobj)
+        if caller == 'S':
+            return response
 
-    def editProjects(self):
+    def editProjects(self, dbhandlerobj:DbHandler):
         pass
 
     def checkAdmins(self, emp_email, dbHandlerObj:DbHandler):
@@ -135,11 +138,11 @@ class SuperAdmin(Admin):
         self.displayMenu(dbHandlerObj)
 
     def assignAdmins(self, dbhandlerobj : DbHandler):
-        cursor = dbhandlerobj.getEmployeesEligibleAdmin(org_id = self.orgId)
+        cursor = dbhandlerobj.getEmployeesEligible(org_id = self.orgId, caller='S')
         print(ps.empAsAdmin)
         for data in cursor:
             if data[2] not in ['A', 'S']:
-                print(ps.printForAdmSelection.format(data[0], data[1]))
+                print(ps.printForAdmSelection.format(data[0], data[1], data[3]))
 
         chooseAdm = int(input())
 
@@ -210,11 +213,11 @@ class SuperAdmin(Admin):
             self.editAdmins(dbhandlerobj)
 
         elif sAdmInput == '3':
-            super().createProjects()
-            # code to create project - call the method present in admin (inheritance)
-
+            response = super().createProjects(dbhandlerobj, caller='S')
+            self.displayMenu(dbhandlerobj)
+                
         elif sAdmInput == '4':
-            super().editProjects()
+            super().editProjects(dbhandlerobj)
             # code to edit the info of the project
 
         elif sAdmInput == '5':

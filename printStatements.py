@@ -35,7 +35,7 @@ Click any character to Exit
 """
 empRegEmail = "Enter the email id of the employee to register: "
 empPresent = "Employee Already Registered. Try Logging In"
-printForAdmSelection = "Click {} to assign as admin {}"
+printForAdmSelection = "Click {} to assign as admin {} ({})"
 empAsAdmin = "Whom do you want to select as an admin? "
 empRegName = "Enter the name of the employee: "
 empPassword = "Enter the password: "
