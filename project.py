@@ -9,13 +9,23 @@ class Project:
 
     def createProject(self, orgid, dbhandlerobj: DbHandler):
         proName = input("Enter the project name to create: ")
-        print("Who is the manager? ")
+        print("Who is the manager for this project? ")
         empData = dbhandlerobj.getEmployeesEligible(org_id=orgid, caller='P')
 
         empIds = []
         for data in empData:
-            if data[2] not in ['A','S']:
+            if data[2] != 'S':
+                print("I am inide count emp")
                 empIds.append(data[0])
+
+        if len(empIds) == 0: 
+            print("No Employees Present To Add them as managers")
+            return 1
+        
+        for data in empData:
+            print("Indide For")
+            if data[2] != 'S':
+                print('Inside if of For')
                 print("Click {} to assign {} ({}) as manager to the project".format(data[0], data[1], data[3]))
 
         print("Click x or X to exit...")

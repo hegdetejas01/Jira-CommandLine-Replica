@@ -150,10 +150,11 @@ class DbHandler:
         
     def getEmployeesEligible(self, org_id, caller=None):
         if caller in ['S', 'P']:
+            # returns all employee from the given org_id
             query = "select t1.emp_id, t1.emp_email, t2.adm_type, t1.emp_name from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s"
             try:
                 self.cursor.execute(query, (org_id, ))
-                return self.cursor
+                return self.cursor.fetchall()
             except:
                 return None
 

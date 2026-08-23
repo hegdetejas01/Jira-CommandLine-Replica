@@ -153,16 +153,13 @@ class SuperAdmin(Admin):
     def editAdmins(self, dbhandlerobj : DbHandler):
         admNum = dbhandlerobj.checkAdminsInDB(org_id=self.orgId, caller='S')
         if admNum == 0: 
-            i = input("No Admins in your organisation yet... Want to add admins?(y/n) ")
-            if i in ['y','Y']:
-                self.assignAdmins(dbhandlerobj)
-            else:
-                self.displayMenu(dbhandlerobj)
+            i = input("No Admins in your organisation yet...")
+            self.displayMenu(dbhandlerobj)
 
         if admNum > 0:
             admIds = []
             adms = dbhandlerobj.getAdm(self.orgId)
-            print("Whom do you want to remove? ")
+            print("Whom do you want to remove as Admin? ")
             for data in adms:
                 admIds.append(data[0])
                 print("Click {} to remove {} ({})".format(data[0], data[1], data[2]))
