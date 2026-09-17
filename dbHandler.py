@@ -147,6 +147,16 @@ class DbHandler:
             return 1
         except:
             return None
+
+    def getManagerList(self):
+        # return all manager ids
+        query = "select emp_id from project"
+        try:
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except:
+            return None
+            
         
     def getEmployeesEligible(self, org_id, caller=None):
         if caller in ['S', 'P']:

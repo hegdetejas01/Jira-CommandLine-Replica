@@ -138,22 +138,39 @@ class SuperAdmin(Admin):
         self.displayMenu(dbHandlerObj)
 
     def assignAdmins(self, dbhandlerobj : DbHandler):
-        cursor = dbhandlerobj.getEmployeesEligible(org_id = self.orgId, caller='S')
-        print(ps.empAsAdmin)
-        for data in cursor:
+        cursorEmp = dbhandlerobj.getEmployeesEligible(org_id=self.orgId, caller='S')
+        # select t1.emp_id, t1.emp_email, t2.adm_type, t1.emp_name from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s
+        manIds = set()
+        cursorMan = dbhandlerobj.getManagerList()
+        for ids in cursorMan:
+            manIds.add(ids[0])
+
+        count = 0
+        for data in cursorEmp:
             if data[2] not in ['A', 'S']:
-                print(ps.printForAdmSelection.format(data[0], data[1], data[3]))
+                if data[0] not in manIds:
+                    count += 1
 
-        chooseAdm = int(input())
+        if count == 0:
+            print("No Free Empployees in your organisation to add them as admins. Try adding employees for your organisation first...")
 
-        response = dbhandlerobj.addAdms(chooseAdm)
-        if response:
-            print(ps.adminSuccessAdd.format(chooseAdm, self.orgId))
+        else:
+            print(ps.empAsAdmin)
+            for data in cursorEmp:
+                if data[2] not in ['A', 'S']:
+                    if data[0] not in manIds:
+                        print(ps.printForAdmSelection.format(data[0], data[1], data[3]))
+
+            chooseAdm = int(input())
+
+            response = dbhandlerobj.addAdms(chooseAdm)
+            if response:
+                print(ps.adminSuccessAdd.format(chooseAdm, self.orgId))
 
     def editAdmins(self, dbhandlerobj : DbHandler):
         admNum = dbhandlerobj.checkAdminsInDB(org_id=self.orgId, caller='S')
         if admNum == 0: 
-            i = input(ps.noAdmYet)
+            print(ps.noAdmYet)
             self.displayMenu(dbhandlerobj)
 
         if admNum > 0:
@@ -188,7 +205,7 @@ class SuperAdmin(Admin):
             A company can have a maximum upto 2 Admins
             It is assigned by super admin of the company
             """
-            responseAdm = dbhandlerobj.checkAdminsInDB(org_id = self.orgId, caller='S') # gets the number of admin in the the db for a particular organisation
+            responseAdm = dbhandlerobj.checkAdminsInDB(org_id = self.orgId, caller='S') # gets the number of admin (super admin not included) in the the db for a particular organisation
             responseEmp = dbhandlerobj.checkEmpinDb(org_id = self.orgId, caller='S') # gets the number of employees of the company for the perticular organisation
 
             if responseEmp - responseAdm - 1 == 0:

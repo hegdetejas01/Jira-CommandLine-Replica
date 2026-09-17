@@ -15,7 +15,7 @@ class Project:
 
         empIds = []
         for data in empData:
-            if data[2] != 'S':
+            if data[2] != 'S' and data[2] != 'A':
                 empIds.append(data[0])
 
         if len(empIds) == 0: 
@@ -23,7 +23,7 @@ class Project:
             return 1
         
         for data in empData:
-            if data[2] != 'S':
+            if data[2] != 'S' and data[2] != 'A':
                 print(ps.manToPro.format(data[0], data[1], data[3]))
 
         print(ps.exitClick)

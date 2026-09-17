@@ -56,15 +56,33 @@ dbo = DbHandler()
 #     if i[2] != 'S':
 #         print(i[0],i[1], i[2])
 
-orgId= 0
-query = "select t1.adm_id, t2.emp_email, t2.emp_name from admin t1 inner join employee t2 on t1.emp_id = t2.emp_id WHERE t2.org_id = %s AND t1.adm_type='A'"
-dbo.cursor.execute(query, (orgId, ))
-data = dbo.cursor.fetchall()
-print(len(data))
-print(data)
+# orgId= 0
+# query = "select t1.adm_id, t2.emp_email, t2.emp_name from admin t1 inner join employee t2 on t1.emp_id = t2.emp_id WHERE t2.org_id = %s AND t1.adm_type='A'"
+# dbo.cursor.execute(query, (orgId, ))
+# data = dbo.cursor.fetchall()
+# print(len(data))
+# print(data)
 
 # prName = 'Working'
 # manId = 18
 # query =  "INSERT INTO project (pr_name, emp_id) VALUES (%s, %s)"
 # dbo.cursor.execute(query, (prName, manId))
 # dbo.conn.commit()
+
+# org_id = 1
+# empIds = []
+# query = "select t1.emp_id, t1.emp_email, t2.adm_type, t1.emp_name from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s"
+# dbo.cursor.execute(query, (org_id, ))
+# datas = dbo.cursor.fetchall()
+# for data in datas:
+#     if data[2] != 'S' and data[2] != 'A':
+#         empIds.append(data[0])
+# print(empIds)
+
+# manId = set()
+# query = "select emp_id from project"
+# dbo.cursor.execute(query)
+# ids = dbo.cursor.fetchall()
+# for id in ids:
+#     manId.add(id[0])
+# print(17 in manId)
