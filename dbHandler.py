@@ -49,7 +49,7 @@ class DbHandler:
 
     def checkEmpinDb(self, org_id=None ,email=None, caller = None):
         if caller is None:
-            # Returns all employee data
+            # returns emp_id and emp_password of a given emp
             query = "SELECT emp_id, emp_password FROM employee WHERE emp_email = %s"
             self.cursor.execute(query, (email, ))
             empData = self.cursor.fetchone()
@@ -156,8 +156,7 @@ class DbHandler:
             return self.cursor.fetchall()
         except:
             return None
-            
-        
+               
     def getEmployeesEligible(self, org_id, caller=None):
         if caller in ['S', 'P']:
             # returns all employee from the given org_id
@@ -213,3 +212,40 @@ class DbHandler:
             self.conn.commit()
             return 1
         except: return 0
+
+    def getProjectList(self, orgId):
+        query = "select t1.pr_id, t1.pr_name, t2.emp_name, t2.emp_id from project t1 left join employee t2 on t1.emp_id = t2.emp_id where t2.org_id=%s"
+        try:
+            self.cursor.execute(query,(orgId, ))
+            return self.cursor.fetchall()
+        except:
+            return None
+
+    def editProjectInDb(self, prId, newProjName=None, newManId=None):
+
+        if newManId is None and newProjName is None:
+            return 1
+        
+        elif newProjName is None:
+            query = "update project set emp_id = %s where pr_id = %s"
+            try:
+                self.cursor.execute(query, (newManId, prId))
+                self.conn.commit()
+                return 1
+            except: return 0
+            
+        elif newManId is None:
+            query = "update project set pr_name = %s where pr_id = %s"
+            try:
+                self.cursor.execute(query, (newProjName, prId))
+                self.conn.commit()
+                return 1
+            except: return 0
+
+        else:
+            query = "update project set pr_name = %s, emp_id = %s where pr_id = %s"
+            try:
+                self.cursor.execute(query, (newProjName, newManId, prId))
+                self.conn.commit()
+                return 1
+            except: return 0

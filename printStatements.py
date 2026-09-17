@@ -16,6 +16,11 @@ superAdmMainMenu = """
 4. Click 4 to edit project information
 5. Click 5 to Logout
 """
+AdmMainMenu = """
+1. Click 1 to create project
+2. Click 2 to edit project information
+3. Click 3 to Logout
+"""
 input1 = """
 What do you want to do?
 1. Click 1 to Login
@@ -56,6 +61,7 @@ proName = "Enter the project name to create: "
 manId = "Who is the manager for this project? "
 noManForPro = "No Employees Present To Add them as managers"
 manToPro = "Click {} to assign {} ({}) as manager to the project"
+newManToPro = "Click {} to assign {} ({}) as the new manager to the project"
 exitClick = "Click x or X to exit..."
 proSuccessToDb = "Project Successfully Added to DB..."
 proFailedToDb = "Failed to add project to DB... Try Again..."
@@ -65,3 +71,12 @@ admRemoveId = "Whom do you want to remove as Admin? "
 editAdmOp = "Click {} to remove {} ({})"
 admRemoveSuccess = "Successfully removed the adm with adm id = {}"
 admRemoveFailure = "Failed to remove the admin... Try Again"
+askEditProj = 'Which project you want to edit??'
+projEditNum = "Click {} to edit the project with name '{}'"
+askProjNameEdit = "Want to edit name of the project (current name = {}) (y/n): "
+askProjNewName = "Enter the new name for the project: "
+askManNameEdit = "Want to change the manager (current manager = {}) (y/n): "
+manNotAvailable = "There are no employee available other than the current manager"
+projEditSuccess = "Project edit successfull"
+projEditFailed = "Failed to update the DB. Try again..."
+empNotAvailableForAdmin = "No Free Empployees in your organisation to add them as admins. Try adding employees for your organisation first..."

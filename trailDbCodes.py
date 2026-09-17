@@ -86,3 +86,8 @@ dbo = DbHandler()
 # for id in ids:
 #     manId.add(id[0])
 # print(17 in manId)
+
+orgId = 1
+query = "select t1.pr_id, t1.pr_name, t2.emp_name, t2.emp_id from project t1 left join employee t2 on t1.emp_id = t2.emp_id where t2.org_id=%s"
+dbo.cursor.execute(query,(orgId, ))
+print(dbo.cursor.fetchall())

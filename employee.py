@@ -4,6 +4,7 @@ from decorator import Decorator
 from organisation import Organisation
 from project import Project
 
+
 class Employee:
 
     def __init__(self, name=None, profile=None, orgId=None):
@@ -23,12 +24,14 @@ class Employee:
         self.orgId = None
         return 1
     
-    def loggedInOptions(self):
-        userInput = input("Click 1 to logout").strip()
-        if userInput == '1': 
-            name = self.name
-            response = self.exitSession()
-            if response: print(ps.logoutSuccess.format(name))
+    def logOut(self):
+        name = self.name
+        response = self.exitSession()
+        if response: print(ps.logoutSuccess.format(name))
+        print("\n\n\n")
+
+        from main import MainProgram
+        MainProgram()
 
     def registerEmployee(self, dbHandlerObj: DbHandler):
         """
@@ -91,7 +94,9 @@ class Employee:
                     superAdmEmp = SuperAdmin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId)
     
                 elif responseAdm == 'A':
+                    orgId = dbHandlerObj.getOrg(caller = 'E', email= email)
                     Decorator().message(ps.adminLoginSuccess.format(email))
+                    superAdmEmp = Admin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId)
     
                 elif responseAdm == 'E':
                     Decorator().message(ps.empLoginSuccess.format(email))
@@ -105,18 +110,48 @@ class Employee:
             Decorator().message(ps.empDoesnotExist)
             return 0
 
+
 class Admin(Employee):
 
-    def __init__(self, name=None, profile=None, orgId=None):
+    def __init__(self, dbHandlerObj:DbHandler ,name=None, profile=None, orgId=None, caller=None):
         super().__init__(name, profile, orgId)
+        if caller != 'S':
+            self.displayAdminMenu(dbHandlerObj)
+
+    def logOut(self):
+        super().logOut()
+
+    def displayAdminMenu(self, dbhandlerobj : DbHandler):
+        admInput = input(ps.AdmMainMenu)
+
+        if admInput == '1':
+            self.createProjects(dbhandlerobj, caller='A')
+
+        elif admInput == '2':
+            self.editProjects(dbhandlerobj, caller='A')
+
+        elif admInput == '3':
+            self.logOut()
 
     def createProjects(self, dbhandlerobj:DbHandler, caller=None):
         response = Project().createProject(self.orgId, dbhandlerobj)
         if caller == 'S':
             return response
 
-    def editProjects(self, dbhandlerobj:DbHandler):
-        pass
+        if response == 1:
+            self.displayAdminMenu(dbhandlerobj)
+        elif response == 0:
+            self.createProjects(dbhandlerobj, caller='A')
+
+    def editProjects(self, dbhandlerobj:DbHandler, caller=None):
+        response = Project().editProject(self.orgId, dbhandlerobj)
+        if caller == 'S':
+            return response
+
+        if response == 1:
+            self.displayAdminMenu(dbhandlerobj)
+        elif response == 0:
+            self.editProjects(dbhandlerobj, caller='A')
 
     def checkAdmins(self, emp_email, dbHandlerObj:DbHandler):
         """
@@ -131,47 +166,102 @@ class Admin(Employee):
         elif responseAdminCheck == 0:
             return 0
 
+
 class SuperAdmin(Admin):
 
     def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None):
-        super().__init__(name, profile, orgId)
-        self.displayMenu(dbHandlerObj)
+        super().__init__(name, profile, orgId, caller='S')
+        self.displaySuperMenu(dbHandlerObj)
+
+    def displaySuperMenu(self, dbhandlerobj : DbHandler):
+        sAdmInput = input(ps.superAdmMainMenu)
+
+        if sAdmInput == '1':
+            """
+            A company can have a maximum upto 2 Admins
+            It is assigned by super admin of the company
+            """
+            self.assignAdmins(dbhandlerobj)
+
+        elif sAdmInput == '2':
+            self.editAdmins(dbhandlerobj)
+
+        elif sAdmInput == '3':
+            self.createProjects(dbhandlerobj, caller='S')
+                
+        elif sAdmInput == '4':
+            self.editProjects(dbhandlerobj, caller='S')
+
+        elif sAdmInput == '5':
+            super().logOut()
+
+    def createProjects(self, dbhandlerobj, caller=None):
+        response = super().createProjects(dbhandlerobj, caller)
+        if response == 1:
+            self.displaySuperMenu(dbhandlerobj)
+        elif response == 0:
+            self.createProjects(dbhandlerobj, caller='S')
+
+    def editProjects(self, dbhandlerobj, caller=None):
+        response = super().editProjects(dbhandlerobj, caller)
+        if response == 1:
+            self.displaySuperMenu(dbhandlerobj)
+        elif response == 0:
+            self.editProjects(dbhandlerobj, caller='S')
 
     def assignAdmins(self, dbhandlerobj : DbHandler):
-        cursorEmp = dbhandlerobj.getEmployeesEligible(org_id=self.orgId, caller='S')
-        # select t1.emp_id, t1.emp_email, t2.adm_type, t1.emp_name from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s
-        manIds = set()
-        cursorMan = dbhandlerobj.getManagerList()
-        for ids in cursorMan:
-            manIds.add(ids[0])
 
-        count = 0
-        for data in cursorEmp:
-            if data[2] not in ['A', 'S']:
-                if data[0] not in manIds:
-                    count += 1
+        responseAdm = dbhandlerobj.checkAdminsInDB(org_id = self.orgId, caller='S') # gets the number of admin (super admin not included) in the the db for a particular organisation
+        responseEmp = dbhandlerobj.checkEmpinDb(org_id = self.orgId, caller='S') # gets the number of employees of the company for the perticular organisation
 
-        if count == 0:
-            print("No Free Empployees in your organisation to add them as admins. Try adding employees for your organisation first...")
+        if responseEmp - responseAdm - 1 == 0:
+            print(ps.insufficientEmpForAdm)
+            self.displaySuperMenu(dbhandlerobj)
+            
+        elif responseAdm == 2:
+            i = input(ps.maxAdmLimit)
+            if i == '1': self.editAdmins(dbhandlerobj)
+            else: 
+                print(ps.returnSuperAdmMainMenu)
+                self.displaySuperMenu(dbhandlerobj)
 
-        else:
-            print(ps.empAsAdmin)
+        elif responseAdm < 2:
+
+            cursorEmp = dbhandlerobj.getEmployeesEligible(org_id=self.orgId, caller='S')
+            manIds = set()
+            cursorMan = dbhandlerobj.getManagerList()
+            for ids in cursorMan:
+                manIds.add(ids[0])
+
+            count = 0
             for data in cursorEmp:
                 if data[2] not in ['A', 'S']:
                     if data[0] not in manIds:
-                        print(ps.printForAdmSelection.format(data[0], data[1], data[3]))
+                        count += 1
 
-            chooseAdm = int(input())
+            if count == 0:
+                print(ps.empNotAvailableForAdmin)
 
-            response = dbhandlerobj.addAdms(chooseAdm)
-            if response:
-                print(ps.adminSuccessAdd.format(chooseAdm, self.orgId))
+            else:
+                print(ps.empAsAdmin)
+                for data in cursorEmp:
+                    if data[2] not in ['A', 'S']:
+                        if data[0] not in manIds:
+                            print(ps.printForAdmSelection.format(data[0], data[1], data[3]))
+
+                chooseAdm = int(input())
+
+                response = dbhandlerobj.addAdms(chooseAdm)
+                if response:
+                    print(ps.adminSuccessAdd.format(chooseAdm, self.orgId))
+
+            self.displaySuperMenu(dbhandlerobj)
 
     def editAdmins(self, dbhandlerobj : DbHandler):
         admNum = dbhandlerobj.checkAdminsInDB(org_id=self.orgId, caller='S')
         if admNum == 0: 
             print(ps.noAdmYet)
-            self.displayMenu(dbhandlerobj)
+            self.displaySuperMenu(dbhandlerobj)
 
         if admNum > 0:
             admIds = []
@@ -195,46 +285,4 @@ class SuperAdmin(Admin):
             except:
                 print(ps.returnSuperAdmMainMenu)
 
-            self.displayMenu(dbhandlerobj)
-
-    def displayMenu(self, dbhandlerobj : DbHandler):
-        sAdmInput = input(ps.superAdmMainMenu)
-
-        if sAdmInput == '1':
-            """
-            A company can have a maximum upto 2 Admins
-            It is assigned by super admin of the company
-            """
-            responseAdm = dbhandlerobj.checkAdminsInDB(org_id = self.orgId, caller='S') # gets the number of admin (super admin not included) in the the db for a particular organisation
-            responseEmp = dbhandlerobj.checkEmpinDb(org_id = self.orgId, caller='S') # gets the number of employees of the company for the perticular organisation
-
-            if responseEmp - responseAdm - 1 == 0:
-                print(ps.insufficientEmpForAdm)
-                self.displayMenu(dbhandlerobj)
-                
-            elif responseAdm == 2:
-                i = input(ps.maxAdmLimit)
-                if i == '1': self.editAdmins(dbhandlerobj)
-                else: 
-                    print(ps.returnSuperAdmMainMenu)
-                    self.displayMenu(dbhandlerobj)
-
-            elif responseAdm < 2:
-                self.assignAdmins(dbhandlerobj)
-                self.displayMenu(dbhandlerobj)
-
-        elif sAdmInput == '2':
-            self.editAdmins(dbhandlerobj)
-
-        elif sAdmInput == '3':
-            response = super().createProjects(dbhandlerobj, caller='S')
-            self.displayMenu(dbhandlerobj)
-                
-        elif sAdmInput == '4':
-            super().editProjects(dbhandlerobj)
-            # code to edit the info of the project
-
-        elif sAdmInput == '5':
-            name = self.name
-            response = self.exitSession()
-            if response: print(ps.logoutSuccess.format(name))
+            self.displaySuperMenu(dbhandlerobj)

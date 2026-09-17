@@ -14,7 +14,9 @@ class MainProgram:
         self.empObj = Employee()
         self.orgObj = Organisation()
         self.decoratorObj = Decorator()
-        self.admObj = Admin()
+        self.username = None
+        self.loggedProfile = None
+        self.LoggedIn = False
 
         if self.dbObj.conn == None:
             print(ps.dbConnectionFailure)
