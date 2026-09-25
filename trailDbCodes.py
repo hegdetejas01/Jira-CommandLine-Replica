@@ -108,13 +108,20 @@ dbo = DbHandler()
 # dbo.cursor.execute(query, (prName,))
 # print(dbo.cursor.fetchone()[0])
 
-prName = "gaganyaan"
-empId = 35
+# prName = "gaganyaan"
+# empId = 35
+# dbo.cursor.execute("select pr_id from project where pr_name = %s", (prName, ))
+# prId = dbo.cursor.fetchone()[0]
+# query = "INSERT INTO work (emp_id, pr_id) VALUES (%s, %s)"
+# dbo.cursor.execute(query, (empId, prId))
+# dbo.conn.commit()
 
-dbo.cursor.execute("select pr_id from project where pr_name = %s", (prName, ))
-prId = dbo.cursor.fetchone()[0]
+# prId = 105
+# query = "select t1.emp_id, t1.emp_name, t1.emp_email from employee t1 right join work t2 on t1.emp_id = t2.emp_id where t2.pr_id = %s"
+# dbo.cursor.execute(query, (prId, ))
+# print(len(dbo.cursor.fetchall()))
 
-query = "INSERT INTO work (emp_id, pr_id) VALUES (%s, %s)"
-
-dbo.cursor.execute(query, (empId, prId))
-dbo.conn.commit()
+# emp_id = 34
+# query = "select pr_id, pr_name from project where emp_id=%s"
+# dbo.cursor.execute(query, (emp_id, ))
+# print(dbo.cursor.fetchall())

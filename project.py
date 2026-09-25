@@ -166,5 +166,5 @@ class Project:
                             return 0 # call edit funtion
 
     def getProjects(self, dbhandlerobj:DbHandler, empId):
-        projData = dbhandlerobj.getProjectList(caller='M', emp_id=empId)
+        projData = dbhandlerobj.getProjectList(caller='M', empId=empId)
         return projData

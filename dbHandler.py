@@ -10,7 +10,7 @@ class DbHandler:
                 host="localhost",
                 database="jira_db")
             self.conn = conn
-            self.cursor = self.conn.cursor()
+            self.cursor = self.conn.cursor(buffered=True)
 
         except:
             self.conn = None
@@ -91,7 +91,6 @@ class DbHandler:
                 return self.cursor.fetchone()[0]
             except:
                 return None
-
 
     def getPassword(self, email:str):
         query = "SELECT emp_password FROM employee WHERE emp_email = %s"
@@ -256,7 +255,7 @@ class DbHandler:
         
         except: return 0
 
-    def getProjectList(self, orgId=None, emp_id=None, caller=None):
+    def getProjectList(self, orgId=None, empId=None, caller=None):
         if caller is None:
             # return all the projects of that organisation
             query = "select t1.pr_id, t1.pr_name, t2.emp_name, t2.emp_id from project t1 left join employee t2 on t1.emp_id = t2.emp_id where t2.org_id=%s"
@@ -268,11 +267,13 @@ class DbHandler:
 
         elif caller == 'M':
             # returns the project for which emp_id is the manager
+            print("FROM DBHANDLER empId = ", empId)
             query = "select pr_id, pr_name from project where emp_id=%s"
             try:
-                self.cursor.execute(query, (emp_id, ))
+                self.cursor.execute(query, (empId, ))
                 return self.cursor.fetchall()
-            except:
+            except Exception as e:
+                print(f"[DB Error in caller=='M']: {e}")
                 return None
 
     def editWorkEmp(self, prId, oldEmpId, newEmpId):
@@ -319,3 +320,20 @@ class DbHandler:
         self.cursor.execute(query, (email,))
         if self.cursor.fetchone():  return True
         else: return False
+
+    def getEmpInProj(self, prId):
+        query = "select t1.emp_id, t1.emp_name, t1.emp_email from employee t1 right join work t2 on t1.emp_id = t2.emp_id where t2.pr_id = %s"
+        try:
+            self.cursor.execute(query, (prId, ))
+            return self.cursor.fetchall()
+        except:
+            return 0
+
+    def removeEmpFromWork(self, prId, empId):
+        query = "delete from work where pr_id = %s and emp_id = %s"
+        try:
+            self.cursor.execute(query, (prId, empId))
+            self.conn.commit()
+            return 1
+        except:
+            return 0

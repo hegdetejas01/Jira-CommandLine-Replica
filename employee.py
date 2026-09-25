@@ -34,9 +34,6 @@ class Employee:
         if response: print(ps.logoutSuccess.format(name))
         print("\n\n\n")
 
-        from main import MainProgram
-        MainProgram()
-
     def registerEmployee(self, dbHandlerObj: DbHandler):
         """
         Input: DB handler object
@@ -307,39 +304,46 @@ class Manager(Employee):
     def logOut(self):
         super().logOut()
 
-    def addEmpToProj(self, dbhandlerobj):
+    def addEmpToProj(self, dbhandlerobj, prId=None):
+        """
             # 1. get the projects for which he is the manager
             # 2. get all the employees of this org except the A, S, all those who are already present in that project and self
             # 3. create dropdown to select the employee
 
-        projIds = []
-        projData = Project().getProjects(dbhandlerobj, self.empId)
+            # return 1 to call the same function
+            # return 0 to call the manager options
+        """
 
-        print("Which project do you choose?")
-        for project in projData:
-            projIds.append(project[0])
-            print("Click {} to select project with name {}".format(project[0], project[1]))
-        i = int(input())
+        if prId is None:
+            projIds = []
+            projData = Project().getProjects(dbhandlerobj, self.empId)
 
-        if i not in projIds:
-            print(ps.invalidInput)
-            self.managerOptions(dbhandlerobj)
-            return
+            print(ps.projSelect)
+            for project in projData:
+                projIds.append(project[0])
+                print(ps.projSelectDetail.format(project[0], project[1]))
+            prId = int(input())
 
-        self.prId = int(i)
+            if prId not in projIds:
+                print(ps.invalidInput)
+                self.managerOptions(dbhandlerobj)
+                return
+
+        self.prId = prId
+        
         empData = dbhandlerobj.getEmployeesEligible(org_id=self.orgId, caller='M')
         empIds = [data[0] for data in empData if data[2] not in {'A', 'S'} and data[0] != self.empId]
 
         if len(empIds) == 0:
-            print("There are no employees to add them to the project")
+            print(ps.noEmpForPr)
             self.managerOptions(dbhandlerobj)
             return
 
-        print("\nSelect the employees you want to add. If you want to add multiple employee, enter the numbers space saperated...")
+        print(ps.askEmpAdd)
 
         for data in empData:
             if data[0] in empIds:
-                print("Click {} to select {} ({})".format(data[0], data[1], data[3]))
+                print(ps.empForPr.format(data[0], data[1], data[3]))
 
         empSelected = [int(i) for i in input().strip().split()]
 
@@ -347,20 +351,86 @@ class Manager(Employee):
         for emp in empSelected:
             if emp not in empIds:
                 count += 1
-                print("Invalid Input ID -", emp)
+                print(ps.invalidEmpInput, emp)
 
             else:
-                print("\nAdding Employee {} to the selected project".format(emp))
+                print(ps.addEmpToWork.format(emp))
                 response = dbhandlerobj.addEmpToWork(prId = self.prId, empId = emp)
                 if response:
-                    print("Employee with ID {} successfully added to the project".format(emp))
+                    print(ps.addEmpToWorkSuccess.format(emp))
                 else:
-                    print("Employee with ID {} already present for the given project".format(emp))
+                    print(ps.addEmpToWorkFailure.format(emp))
 
         if count != 0:
-            print("Redirecting to Main Menu due to one or more wrong input...")
-            self.managerOptions(dbhandlerobj)
+            print(ps.manOpsRedirect)
+
+        self.managerOptions(dbhandlerobj)
+        return
+
+    def removeEmpFromProj(self, dbhandlerobj, prId = None):
+        """
+            # drop down menu of the proj for which he is the manager
+            # ask him to select th proj
+            # check if there are employees in that project 
+            # if no, ask him to add employees to the project (send the prID)
+            # if yes, drop down menu of empId and name for him to remove
+        """
+
+        if prId is None:
+            projIds = []
+            projData = Project().getProjects(dbhandlerobj, self.empId)
+
+            print(ps.projSelect)
+            for project in projData:
+                projIds.append(project[0])
+                print(ps.projSelectDetail.format(project[0], project[1]))
+            prId = int(input())
+
+            if prId not in projIds:
+                print(ps.invalidInput)
+                self.managerOptions(dbhandlerobj)
+                return
+
+        self.prId = prId
+
+        empData = dbhandlerobj.getEmpInProj(prId=self.prId)
+        empIds = [data[0] for data in empData if data[2] not in {'A', 'S'} and data[0] != self.empId]
+
+        if len(empIds) == 0:
+            print("No Employees are yet present in the project... Try Adding the employees for the project first")
+            self.addEmpToProj(dbhandlerobj, self.prId)
             return
+
+        else:
+            print("\nWhom do you want to remove? If there are multiple employee keep it space saperated...")
+            for emp in empData:
+                if emp[0] in empIds:
+                    print("Click {} to remove {} ({}) from this project (ID = {})".format(emp[0], emp[2], emp[1], self.prId))
+            print(ps.exitClick)
+
+            empToRemove = [int(i) for i in input().strip().split()]
+
+        count = 0
+        for emp in empToRemove:
+            if emp not in empIds:
+                count += 1
+                print(ps.invalidEmpInput, emp)
+
+            else:
+                print(ps.removeEmpFromWork.format(emp))
+                response = dbhandlerobj.removeEmpFromWork(prId = self.prId, empId = emp)
+                empIds.remove(emp)
+
+                if response:
+                    print(ps.removeEmpFromWorkSuccess.format(emp))
+                else:
+                    print(ps.removeEmpFromWorkFailure.format(emp))
+
+        if count != 0:
+            print(ps.manOpsRedirect)
+
+        self.managerOptions(dbhandlerobj)
+        return
 
     def managerOptions(self, dbhandlerobj : DbHandler):
         manInput = input(ps.manMainMenu)
@@ -369,8 +439,8 @@ class Manager(Employee):
             self.addEmpToProj(dbhandlerobj)
     
         elif manInput == '2':
-            # remove employees from project
-            pass
+            self.removeEmpFromProj(dbhandlerobj)
+
         elif manInput == '3':
             # create ticket
             pass
