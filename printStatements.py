@@ -9,6 +9,13 @@ orgAddSuccess = "Organisation successfully added to DB"
 insufficientEmpForAdm = "There are insufficent employees to be assigned as Admin... What would you like to do next??"
 returnSuperAdmMainMenu = "Returning to main menu..."
 maxAdmLimit = "Maximum Admin Limit for your Organisation Reached.! Click 1 to edit the admins (if needed)"
+manMainMenu = """
+1. Click 1 to add employees to project
+2. Click 2 to remove employees from project
+3. Click 3 to create ticket
+4. Click 4 to edit ticket
+5. Click 5 to Logout
+"""
 superAdmMainMenu = """
 1. Click 1 to assign admins
 2. Click 2 to edit admins
@@ -54,6 +61,7 @@ superAdmLoginSuccess = "{} successfully logged in as Super Admin"
 superAdminAssigned =  "You are the first employee from your ORGANISATION to get registered. Therefore, assigning you as the SUPER ADMIN"
 adminLoginSuccess = "{} successfully logged in as General Admin"
 empLoginSuccess = "{} successfully logged in"
+manLoginSuccess = "{} successfully logged in as Manager"
 logoutSuccess = "SUCCESSFULLY LOGGED-OUT FROM {} ACCOUNT"
 printOrg = "Click {} for {}"
 empLoginEmail = "Enter you email to Login: "

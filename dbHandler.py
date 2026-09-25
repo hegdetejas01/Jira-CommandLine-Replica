@@ -83,6 +83,16 @@ class DbHandler:
             else: 
                 return 'E'
 
+    def getEmpId(self, caller = None, email = None):
+        if caller == 'E':
+            query = "select emp_id from employee where emp_email=%s"
+            try:
+                self.cursor.execute(query, (email,  ))
+                return self.cursor.fetchone()[0]
+            except:
+                return None
+
+
     def getPassword(self, email:str):
         query = "SELECT emp_password FROM employee WHERE emp_email = %s"
         self.cursor.execute(query, (email, ))
@@ -102,6 +112,15 @@ class DbHandler:
                 return exists
             except:
                 return None
+
+    def addEmpToWork(self, prId, empId):
+        query = "insert into work (pr_id, emp_id) values (%s, %s)"
+        try:
+            self.cursor.execute(query, (prId, empId))
+            self.conn.commit()
+            return 1
+        except:
+            return 0
 
     def addEmpToDb(self, name:str, email:str, password:str, orgNum:int):
         """
@@ -158,7 +177,7 @@ class DbHandler:
             return None
                
     def getEmployeesEligible(self, org_id, caller=None):
-        if caller in ['S', 'P']:
+        if caller in ['S', 'P', 'M']:
             # returns all employee from the given org_id
             query = "select t1.emp_id, t1.emp_email, t2.adm_type, t1.emp_name from employee t1 left join admin t2 on t1.emp_id = t2.emp_id where org_id = %s"
             try:
@@ -205,21 +224,65 @@ class DbHandler:
                 return 1
             except: return 0
 
+    def removeProjFromDB(self, prName):
+        query = "delete from project where pr_name = %s"
+        try:
+            self.cursor.execute(query, (prName, ))
+            self.conn.commit()
+            return 1
+        except:
+            return 0
+
+    def addProjToWork(self, empId, prName):
+        query1 = "select pr_id from project where pr_name = %s"
+        query2 = "INSERT INTO work (emp_id, pr_id) VALUES (%s, %s)"
+        try: 
+            self.cursor.execute(query1, (prName, ))
+            prId = self.cursor.fetchone()[0]
+            self.cursor.execute(query2, (empId, prId))
+            self.conn.commit()
+            return 1
+        
+        except:
+            return 0
+
     def createProjectinDb(self, prName, manId):
         query =  "INSERT INTO project (pr_name, emp_id) VALUES (%s, %s)"
         try:
             self.cursor.execute(query, (prName, manId))
             self.conn.commit()
+
             return 1
+        
         except: return 0
 
-    def getProjectList(self, orgId):
-        query = "select t1.pr_id, t1.pr_name, t2.emp_name, t2.emp_id from project t1 left join employee t2 on t1.emp_id = t2.emp_id where t2.org_id=%s"
+    def getProjectList(self, orgId=None, emp_id=None, caller=None):
+        if caller is None:
+            # return all the projects of that organisation
+            query = "select t1.pr_id, t1.pr_name, t2.emp_name, t2.emp_id from project t1 left join employee t2 on t1.emp_id = t2.emp_id where t2.org_id=%s"
+            try:
+                self.cursor.execute(query,(orgId, ))
+                return self.cursor.fetchall()
+            except:
+                return None
+
+        elif caller == 'M':
+            # returns the project for which emp_id is the manager
+            query = "select pr_id, pr_name from project where emp_id=%s"
+            try:
+                self.cursor.execute(query, (emp_id, ))
+                return self.cursor.fetchall()
+            except:
+                return None
+
+    def editWorkEmp(self, prId, oldEmpId, newEmpId):
+        query = "update work set emp_id = %s where pr_id=%s and emp_id=%s"
         try:
-            self.cursor.execute(query,(orgId, ))
-            return self.cursor.fetchall()
-        except:
-            return None
+            self.cursor.execute(query, (newEmpId, prId, oldEmpId))
+            self.conn.commit()
+            return 1
+        
+        except: return 0
 
     def editProjectInDb(self, prId, newProjName=None, newManId=None):
 
@@ -249,3 +312,10 @@ class DbHandler:
                 self.conn.commit()
                 return 1
             except: return 0
+
+    def isManager(self, email):
+        query = "select 1 from employee t1 left join project t2 on t1.emp_id = t2.emp_id where t1.emp_email=%s"
+
+        self.cursor.execute(query, (email,))
+        if self.cursor.fetchone():  return True
+        else: return False

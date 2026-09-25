@@ -7,10 +7,11 @@ from project import Project
 
 class Employee:
 
-    def __init__(self, name=None, profile=None, orgId=None):
+    def __init__(self, name=None, profile=None, orgId=None, empId=None):
         self.name = name
         self.profile = profile
         self.orgId = orgId
+        self.empId = empId
 
     def setLoginTime(self, email, dbhandlerobj: DbHandler):
         """
@@ -22,6 +23,9 @@ class Employee:
         self.name = None
         self.profile = None
         self.orgId = None
+        self.empId = None
+        self.prId = None
+
         return 1
     
     def logOut(self):
@@ -87,19 +91,25 @@ class Employee:
                 responseAdm = dbHandlerObj.checkEmpinAdm(responseDb[0]) # gets S E or A
 
                 self.setLoginTime(email, dbHandlerObj)
+                orgId = dbHandlerObj.getOrg(caller = 'E', email= email)
+                empId = dbHandlerObj.getEmpId(caller = 'E', email = email)
 
                 if responseAdm == 'S':
-                    orgId = dbHandlerObj.getOrg(caller = 'E', email= email)
                     Decorator().message(ps.superAdmLoginSuccess.format(email))
-                    superAdmEmp = SuperAdmin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId)
+                    SuperAdmin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId, empId=empId)
     
                 elif responseAdm == 'A':
-                    orgId = dbHandlerObj.getOrg(caller = 'E', email= email)
                     Decorator().message(ps.adminLoginSuccess.format(email))
-                    superAdmEmp = Admin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId)
+                    Admin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId, empId=empId)
     
                 elif responseAdm == 'E':
-                    Decorator().message(ps.empLoginSuccess.format(email))
+                    isManager = dbHandlerObj.isManager(email)
+                    if isManager:
+                        Decorator().message(ps.manLoginSuccess.format(email))
+                        Manager(dbHandlerObj=dbHandlerObj, name=email, profile='M', orgId=orgId, empId=empId)
+                    else:
+                        Decorator().message(ps.empLoginSuccess.format(email))
+                        Employee(dbHandlerObj=dbHandlerObj, name=email, profile='E', orgId=orgId, empId=empId)
 
                 return 1
             
@@ -113,8 +123,8 @@ class Employee:
 
 class Admin(Employee):
 
-    def __init__(self, dbHandlerObj:DbHandler ,name=None, profile=None, orgId=None, caller=None):
-        super().__init__(name, profile, orgId)
+    def __init__(self, dbHandlerObj:DbHandler ,name=None, profile=None, orgId=None, empId=None, caller=None):
+        super().__init__(name, profile, orgId, empId)
         if caller != 'S':
             self.displayAdminMenu(dbHandlerObj)
 
@@ -169,8 +179,8 @@ class Admin(Employee):
 
 class SuperAdmin(Admin):
 
-    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None):
-        super().__init__(name, profile, orgId, caller='S')
+    def __init__(self, dbHandlerObj:DbHandler, name, profile, orgId, empId):
+        super().__init__(dbHandlerObj, name, profile, orgId, empId, caller='S')
         self.displaySuperMenu(dbHandlerObj)
 
     def displaySuperMenu(self, dbhandlerobj : DbHandler):
@@ -286,3 +296,86 @@ class SuperAdmin(Admin):
                 print(ps.returnSuperAdmMainMenu)
 
             self.displaySuperMenu(dbhandlerobj)
+
+
+class Manager(Employee):
+
+    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None):
+        super().__init__(name=name, profile=profile, orgId=orgId, empId=empId)
+        self.managerOptions(dbHandlerObj)
+
+    def logOut(self):
+        super().logOut()
+
+    def addEmpToProj(self, dbhandlerobj):
+            # 1. get the projects for which he is the manager
+            # 2. get all the employees of this org except the A, S, all those who are already present in that project and self
+            # 3. create dropdown to select the employee
+
+        projIds = []
+        projData = Project().getProjects(dbhandlerobj, self.empId)
+
+        print("Which project do you choose?")
+        for project in projData:
+            projIds.append(project[0])
+            print("Click {} to select project with name {}".format(project[0], project[1]))
+        i = int(input())
+
+        if i not in projIds:
+            print(ps.invalidInput)
+            self.managerOptions(dbhandlerobj)
+            return
+
+        self.prId = int(i)
+        empData = dbhandlerobj.getEmployeesEligible(org_id=self.orgId, caller='M')
+        empIds = [data[0] for data in empData if data[2] not in {'A', 'S'} and data[0] != self.empId]
+
+        if len(empIds) == 0:
+            print("There are no employees to add them to the project")
+            self.managerOptions(dbhandlerobj)
+            return
+
+        print("\nSelect the employees you want to add. If you want to add multiple employee, enter the numbers space saperated...")
+
+        for data in empData:
+            if data[0] in empIds:
+                print("Click {} to select {} ({})".format(data[0], data[1], data[3]))
+
+        empSelected = [int(i) for i in input().strip().split()]
+
+        count = 0
+        for emp in empSelected:
+            if emp not in empIds:
+                count += 1
+                print("Invalid Input ID -", emp)
+
+            else:
+                print("\nAdding Employee {} to the selected project".format(emp))
+                response = dbhandlerobj.addEmpToWork(prId = self.prId, empId = emp)
+                if response:
+                    print("Employee with ID {} successfully added to the project".format(emp))
+                else:
+                    print("Employee with ID {} already present for the given project".format(emp))
+
+        if count != 0:
+            print("Redirecting to Main Menu due to one or more wrong input...")
+            self.managerOptions(dbhandlerobj)
+            return
+
+    def managerOptions(self, dbhandlerobj : DbHandler):
+        manInput = input(ps.manMainMenu)
+
+        if manInput == '1':
+            self.addEmpToProj(dbhandlerobj)
+    
+        elif manInput == '2':
+            # remove employees from project
+            pass
+        elif manInput == '3':
+            # create ticket
+            pass
+        elif manInput == '4':
+            # edit ticket
+            pass
+        elif manInput == '5':
+            self.logOut()

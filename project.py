@@ -37,11 +37,25 @@ class Project:
 
         try:
             if int(i) in empIds:
-                response = dbhandlerobj.createProjectinDb(proName, int(i))
-                if response: 
-                    print(ps.proSuccessToDb) 
-                    # return 1 # call mainmenu
-                    return 1
+                projResponse = dbhandlerobj.createProjectinDb(proName, int(i))
+                if projResponse: 
+                    if dbhandlerobj.addProjToWork(int(i), proName):
+                        print(ps.proSuccessToDb) 
+                        # return 1 # call mainmenu
+                        return 1
+                    else:
+                        count = 0
+                        retValue = 0
+                        while retValue != 1:
+                            print("TRYINGGGGGG......")
+                            if count == 3:
+                                break
+
+                            count += 1
+                            retValue = dbhandlerobj.removeProjFromDB(proName)
+
+                        return 0
+                        # return 0 - to call create project
                 else: 
                     print(ps.proFailedToDb) 
                     # return 0 # again call create project
@@ -88,6 +102,7 @@ class Project:
                 for project in projects:
                     if project[0] == edit:
                         self.manId = project[3]
+                        self.prName = project[1]
 
                         nameEdit = input(ps.askProjNameEdit.format(project[1].upper()))
 
@@ -120,13 +135,36 @@ class Project:
                         else:
                             newManId = None
 
-                        response = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=newProjName, newManId=newManId)
-                        if response == 1:
+                        projResponse = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=newProjName, newManId=newManId)
+
+                        if projResponse == 1 and newManId is not None:
+                            # edit the details in the work table
+                            workResponse = dbhandlerobj.editWorkEmp(prId=self.prId, newEmpId=newManId, oldEmpId=self.manId)
+
+                        if projResponse and workResponse:
                             print(ps.projEditSuccess)
-                            return response
+                            return 1
                         # 1 if addition is successfull - call main menu
                         # 0 if not edited in db - call edit function
+
+                        elif workResponse == 0 and projResponse == 1:
+
+                            revertResponse = 0
+                            count = 0
+                            while revertResponse != 1:
+                                print("TRYINGGGG.....")
+                                if count == 3:
+                                    break
+
+                                count += 1
+                                revertResponse = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=self.prName, newManId=self.manId)
+                            # delete the changes
+                            return 0
 
                         else:
                             print(ps.projEditFailed)
                             return 0 # call edit funtion
+
+    def getProjects(self, dbhandlerobj:DbHandler, empId):
+        projData = dbhandlerobj.getProjectList(caller='M', emp_id=empId)
+        return projData
