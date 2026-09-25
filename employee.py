@@ -3,6 +3,7 @@ import printStatements as ps
 from decorator import Decorator
 from organisation import Organisation
 from project import Project
+from ticket import Ticket
 
 
 class Employee:
@@ -97,7 +98,7 @@ class Employee:
     
                 elif responseAdm == 'A':
                     Decorator().message(ps.adminLoginSuccess.format(email))
-                    Admin(dbHandlerObj=dbHandlerObj, name=email, profile='S', orgId=orgId, empId=empId)
+                    Admin(dbHandlerObj=dbHandlerObj, name=email, profile='A', orgId=orgId, empId=empId)
     
                 elif responseAdm == 'E':
                     isManager = dbHandlerObj.isManager(email)
@@ -295,10 +296,44 @@ class SuperAdmin(Admin):
             self.displaySuperMenu(dbhandlerobj)
 
 
-class Manager(Employee):
+class WorkingEmployee(Employee):
+
+    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None, caller=None):
+        super().__init__(name=name, profile=profile, orgId=orgId, empId=empId)
+        if caller != 'M':
+            self.employeeOptions(dbHandlerObj)
+
+    def logout(self):
+        super().logOut()
+
+    def createTicket(self, dbhandlerobj:DbHandler):
+        Ticket().createTicket()
+
+    def updateTicket(self, dbhandlerobj:DbHandler):
+        Ticket().updateTicket()
+
+    def closeTicket(self, dbhandlerobj:DbHandler):
+        Ticket().closeTicket()
+
+    def employeeOptions(self, dbhandlerobj:DbHandler):
+        empInput = input(ps.empInput)
+
+        if empInput == '1':
+            self.createTicket(dbhandlerobj)
+
+        elif empInput == '2':
+            self.updateTicket(dbhandlerobj)
+
+        elif empInput == '3':
+            self.closeTicket(dbhandlerobj)
+
+        elif empInput == '4':
+            self.logOut()
+
+class Manager(WorkingEmployee):
 
     def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None):
-        super().__init__(name=name, profile=profile, orgId=orgId, empId=empId)
+        super().__init__(dbHandlerObj, name=name, profile=profile, orgId=orgId, empId=empId, caller='M')
         self.managerOptions(dbHandlerObj)
 
     def logOut(self):
@@ -397,15 +432,15 @@ class Manager(Employee):
         empIds = [data[0] for data in empData if data[2] not in {'A', 'S'} and data[0] != self.empId]
 
         if len(empIds) == 0:
-            print("No Employees are yet present in the project... Try Adding the employees for the project first")
+            print(ps.empNotPresentInPr)
             self.addEmpToProj(dbhandlerobj, self.prId)
             return
 
         else:
-            print("\nWhom do you want to remove? If there are multiple employee keep it space saperated...")
+            print(ps.removeEmpFromPr)
             for emp in empData:
                 if emp[0] in empIds:
-                    print("Click {} to remove {} ({}) from this project (ID = {})".format(emp[0], emp[2], emp[1], self.prId))
+                    print(ps.removeEmpFromPrOptions.format(emp[0], emp[2], emp[1], self.prId))
             print(ps.exitClick)
 
             empToRemove = [int(i) for i in input().strip().split()]
@@ -432,6 +467,15 @@ class Manager(Employee):
         self.managerOptions(dbhandlerobj)
         return
 
+    def createTicket(self, dbhandlerobj):
+        response = super().createTicket(dbhandlerobj)
+
+    def updateTicket(self, dbhandlerobj):
+        response = super().updateTicket(dbhandlerobj)
+
+    def closeTicket(self, dbhandlerobj):
+        response = super().closeTicket(dbhandlerobj)
+    
     def managerOptions(self, dbhandlerobj : DbHandler):
         manInput = input(ps.manMainMenu)
 
@@ -442,10 +486,10 @@ class Manager(Employee):
             self.removeEmpFromProj(dbhandlerobj)
 
         elif manInput == '3':
-            # create ticket
-            pass
+            self.createTicket(dbhandlerobj)
+            
         elif manInput == '4':
-            # edit ticket
-            pass
+            self.updateTicket(dbhandlerobj)
+
         elif manInput == '5':
             self.logOut()

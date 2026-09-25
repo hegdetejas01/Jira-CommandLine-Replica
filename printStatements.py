@@ -101,3 +101,12 @@ manOpsRedirect = "Redirecting to Main Menu due to one or more wrong input..."
 removeEmpFromWork = "\nRemoving Employee {} to the selected project"
 removeEmpFromWorkSuccess = "Employee with ID {} successfully removed to the project"
 removeEmpFromWorkFailure = "Employee with ID {} not present in this project"
+empInput = """
+1. Click 1 to create ticket
+2. Click 2 to update ticket
+3. Click 3 to close the ticket
+4. Click 4 to logout
+"""
+empNotPresentInPr = "No Employees are yet present in the project... Try Adding the employees for the project first"
+removeEmpFromPr = "\nWhom do you want to remove? If there are multiple employee keep it space saperated..."
+removeEmpFromPrOptions = "Click {} to remove {} ({}) from this project (ID = {})"
