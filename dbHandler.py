@@ -267,13 +267,11 @@ class DbHandler:
 
         elif caller == 'M':
             # returns the project for which emp_id is the manager
-            print("FROM DBHANDLER empId = ", empId)
             query = "select pr_id, pr_name from project where emp_id=%s"
             try:
                 self.cursor.execute(query, (empId, ))
                 return self.cursor.fetchall()
-            except Exception as e:
-                print(f"[DB Error in caller=='M']: {e}")
+            except:
                 return None
 
     def editWorkEmp(self, prId, oldEmpId, newEmpId):
@@ -337,3 +335,56 @@ class DbHandler:
             return 1
         except:
             return 0
+
+    def getSuppTicketData(self, what):
+        if what == 'priority':
+            query = "select * from tickets_priority"
+        elif what == 'type':
+            query = "select * from tickets_type"
+        elif what == 'status':
+            query = "select * from tickets_status"
+
+        try:
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except Exception as e:
+            return None
+
+    def getIndiviadualStatus(self, status):
+        query = "select id from tickets_status where status=%s"
+        self.cursor.execute(query, (status, ))
+        return self.cursor.fetchone()[0]
+
+    def getProjName(self, prId):
+        query = "select pr_name from project where pr_id=%s"
+        try:
+            self.cursor.execute(query, (prId, ))
+            return self.cursor.fetchone()[0]
+        except:
+            return 0
+
+    def getLastTicketId(self, prId):
+        query = "select id from ticket where pr_id = %s ORDER BY id DESC LIMIT 1"
+        try:
+            self.cursor.execute(query, (prId, ))
+            return self.cursor.fetchone()
+        except Exception as e:
+            return None
+
+    def createTicketInDb(self, ticketId, prId, title, ticketType, createdBy, assignee, priority, status,resolvedDate=None, description=None):
+
+        if resolvedDate != 1:
+
+            resolvedDate = None
+            query = "insert into ticket (ticket_id, pr_id, title, description, ticket_type, created_by, resolved_date, assignee, priority, ticket_status) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+        elif resolvedDate == 1:
+
+            query = "insert into ticket (ticket_id, pr_id, title, description, ticket_type, created_by, assignee, priority, ticket_status, resolved_date) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())"
+
+        try:
+            self.cursor.execute(query, (ticketId, prId, title, description, ticketType, createdBy, assignee, priority, status))
+            self.conn.commit()
+            return 1
+        except Exception as e:
+            return None

@@ -14,7 +14,8 @@ manMainMenu = """
 2. Click 2 to remove employees from project
 3. Click 3 to create ticket
 4. Click 4 to edit ticket
-5. Click 5 to Logout
+5. Click 5 to view ticket
+6. Click 6 to Logout
 """
 superAdmMainMenu = """
 1. Click 1 to assign admins
@@ -102,10 +103,11 @@ removeEmpFromWork = "\nRemoving Employee {} to the selected project"
 removeEmpFromWorkSuccess = "Employee with ID {} successfully removed to the project"
 removeEmpFromWorkFailure = "Employee with ID {} not present in this project"
 empInput = """
-1. Click 1 to create ticket
-2. Click 2 to update ticket
-3. Click 3 to close the ticket
-4. Click 4 to logout
+1. Click 1 to view ticket
+2. Click 2 to create ticket
+3. Click 3 to update ticket
+4. Click 4 to close the ticket
+5. Click 5 to logout
 """
 empNotPresentInPr = "No Employees are yet present in the project... Try Adding the employees for the project first"
 removeEmpFromPr = "\nWhom do you want to remove? If there are multiple employee keep it space saperated..."

@@ -107,7 +107,7 @@ class Employee:
                         Manager(dbHandlerObj=dbHandlerObj, name=email, profile='M', orgId=orgId, empId=empId)
                     else:
                         Decorator().message(ps.empLoginSuccess.format(email))
-                        Employee(dbHandlerObj=dbHandlerObj, name=email, profile='E', orgId=orgId, empId=empId)
+                        WorkingEmployee(dbHandlerObj=dbHandlerObj, name=email, profile='E', orgId=orgId, empId=empId)
 
                 return 1
             
@@ -299,15 +299,40 @@ class SuperAdmin(Admin):
 class WorkingEmployee(Employee):
 
     def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None, caller=None):
+        print("DEBUG 22")
         super().__init__(name=name, profile=profile, orgId=orgId, empId=empId)
+        self.selectProj(dbHandlerObj)
         if caller != 'M':
+            print("DEBUG 44")
             self.employeeOptions(dbHandlerObj)
+
+    def selectProj(self, dbhandlerobj):
+        print("DEBUG 33")
+        projIds = []
+        projData = Project().getProjects(dbhandlerobj, self.empId)
+
+        print(ps.projSelect)
+        for project in projData:
+            projIds.append(project[0])
+            print(ps.projSelectDetail.format(project[0], project[1]))
+        prId = int(input())
+
+        if prId not in projIds:
+            print(ps.invalidInput)
+            return
+        self.prId = prId
 
     def logout(self):
         super().logOut()
 
-    def createTicket(self, dbhandlerobj:DbHandler):
-        Ticket().createTicket()
+    def createTicket(self, dbhandlerobj:DbHandler, caller=None):
+        response = Ticket().createTicket(empId=self.empId, prId=self.prId, dbhandlerobj=dbhandlerobj)
+        if caller == 'M': return response
+        else:
+            if response == 1: 
+                self.createTicket(dbhandlerobj)
+            elif response == 0: 
+                self.employeeOptions(dbhandlerobj)
 
     def updateTicket(self, dbhandlerobj:DbHandler):
         Ticket().updateTicket()
@@ -315,25 +340,33 @@ class WorkingEmployee(Employee):
     def closeTicket(self, dbhandlerobj:DbHandler):
         Ticket().closeTicket()
 
+    def viewTicket(self, dbhandlerobj:DbHandler):
+        Ticket().viewTicket()
+
     def employeeOptions(self, dbhandlerobj:DbHandler):
         empInput = input(ps.empInput)
 
         if empInput == '1':
-            self.createTicket(dbhandlerobj)
+            self.viewTicket(dbhandlerobj)
 
         elif empInput == '2':
-            self.updateTicket(dbhandlerobj)
+            self.createTicket(dbhandlerobj)
 
         elif empInput == '3':
-            self.closeTicket(dbhandlerobj)
+            self.updateTicket(dbhandlerobj)
 
         elif empInput == '4':
+            self.closeTicket(dbhandlerobj)
+
+        elif empInput == '5':
             self.logOut()
 
 class Manager(WorkingEmployee):
 
     def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None):
+        print("DEBUG 11")
         super().__init__(dbHandlerObj, name=name, profile=profile, orgId=orgId, empId=empId, caller='M')
+        print("DEBUG 55")
         self.managerOptions(dbHandlerObj)
 
     def logOut(self):
@@ -348,23 +381,6 @@ class Manager(WorkingEmployee):
             # return 1 to call the same function
             # return 0 to call the manager options
         """
-
-        if prId is None:
-            projIds = []
-            projData = Project().getProjects(dbhandlerobj, self.empId)
-
-            print(ps.projSelect)
-            for project in projData:
-                projIds.append(project[0])
-                print(ps.projSelectDetail.format(project[0], project[1]))
-            prId = int(input())
-
-            if prId not in projIds:
-                print(ps.invalidInput)
-                self.managerOptions(dbhandlerobj)
-                return
-
-        self.prId = prId
         
         empData = dbhandlerobj.getEmployeesEligible(org_id=self.orgId, caller='M')
         empIds = [data[0] for data in empData if data[2] not in {'A', 'S'} and data[0] != self.empId]
@@ -411,23 +427,6 @@ class Manager(WorkingEmployee):
             # if yes, drop down menu of empId and name for him to remove
         """
 
-        if prId is None:
-            projIds = []
-            projData = Project().getProjects(dbhandlerobj, self.empId)
-
-            print(ps.projSelect)
-            for project in projData:
-                projIds.append(project[0])
-                print(ps.projSelectDetail.format(project[0], project[1]))
-            prId = int(input())
-
-            if prId not in projIds:
-                print(ps.invalidInput)
-                self.managerOptions(dbhandlerobj)
-                return
-
-        self.prId = prId
-
         empData = dbhandlerobj.getEmpInProj(prId=self.prId)
         empIds = [data[0] for data in empData if data[2] not in {'A', 'S'} and data[0] != self.empId]
 
@@ -468,13 +467,20 @@ class Manager(WorkingEmployee):
         return
 
     def createTicket(self, dbhandlerobj):
-        response = super().createTicket(dbhandlerobj)
+        response = super().createTicket(dbhandlerobj=dbhandlerobj, caller='M')
+        if response == 0: 
+            self.managerOptions(dbhandlerobj)
+        elif response == 1: 
+            self.createTicket(dbhandlerobj)
 
     def updateTicket(self, dbhandlerobj):
         response = super().updateTicket(dbhandlerobj)
 
     def closeTicket(self, dbhandlerobj):
         response = super().closeTicket(dbhandlerobj)
+
+    def viewTitcket(self, dbhandlerobj):
+        response = super().viewTicket(dbhandlerobj)
     
     def managerOptions(self, dbhandlerobj : DbHandler):
         manInput = input(ps.manMainMenu)
@@ -492,4 +498,7 @@ class Manager(WorkingEmployee):
             self.updateTicket(dbhandlerobj)
 
         elif manInput == '5':
+            self.viewTitcket(dbhandlerobj)
+
+        elif manInput == '6':
             self.logOut()

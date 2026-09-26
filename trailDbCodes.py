@@ -125,3 +125,25 @@ dbo = DbHandler()
 # query = "select pr_id, pr_name from project where emp_id=%s"
 # dbo.cursor.execute(query, (emp_id, ))
 # print(dbo.cursor.fetchall())
+
+# query = "select id from tickets_status where status='TO DO'"
+# dbo.cursor.execute(query)
+# print(dbo.cursor.fetchone()[0])
+
+# prId = 22
+# query = "select pr_name from project where pr_id=%s"
+# dbo.cursor.execute(query, (prId, ))
+# print(dbo.cursor.fetchone()[0])
+
+# prId = 22
+# query = "select id from ticket where pr_id = %s ORDER BY id DESC LIMIT 1"
+# try:
+#     dbo.cursor.execute(query, (prId, ))
+#     print(dbo.cursor.fetchone()[0])
+# except Exception as e:
+#     print(e)
+
+num = 149
+padded = f"{num:04d}"
+print(type(padded))
+print(padded)

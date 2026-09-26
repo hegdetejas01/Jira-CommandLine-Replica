@@ -137,6 +137,8 @@ class Project:
 
                         projResponse = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=newProjName, newManId=newManId)
 
+
+                        workResponse = 0
                         if projResponse == 1 and newManId is not None:
                             # edit the details in the work table
                             workResponse = dbhandlerobj.editWorkEmp(prId=self.prId, newEmpId=newManId, oldEmpId=self.manId)
@@ -152,12 +154,16 @@ class Project:
                             revertResponse = 0
                             count = 0
                             while revertResponse != 1:
-                                print("TRYINGGGG.....")
                                 if count == 3:
                                     break
-
+                                
                                 count += 1
                                 revertResponse = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=self.prName, newManId=self.manId)
+
+                            if revertResponse == 1:
+                                print("Unable to change the manager... Contact your Admin...")
+                                return 1
+                            
                             # delete the changes
                             return 0
 
