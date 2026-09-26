@@ -143,7 +143,12 @@ dbo = DbHandler()
 # except Exception as e:
 #     print(e)
 
-num = 149
-padded = f"{num:04d}"
-print(type(padded))
-print(padded)
+# num = 149
+# padded = f"{num:04d}"
+# print(type(padded))
+# print(padded)
+
+id = 2
+query = "select t1.ticket_id, t1.title, t2.pr_name, t7.type, t5.priority, t6.status, t1.description, t3.emp_name as assignee, t4.emp_name as created_by, t1.created_date, t1.modified_date, t1.resolved_date from ticket t1 left join project t2 on t1.pr_id = t2.pr_id left join employee t3 on t1.assignee = t3.emp_id left join employee t4 on t1.created_by = t4.emp_id left join tickets_priority t5 on t1.priority=t5.id left join tickets_status t6 on t1.ticket_status=t6.id left join tickets_type t7 on t1.ticket_type=t7.id where t1.id=%s"
+dbo.cursor.execute(query, (id, ))
+print(dbo.cursor.fetchall())

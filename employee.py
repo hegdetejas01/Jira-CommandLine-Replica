@@ -33,7 +33,7 @@ class Employee:
         name = self.name
         response = self.exitSession()
         if response: print(ps.logoutSuccess.format(name))
-        print("\n\n\n")
+        print("\n\n")
 
     def registerEmployee(self, dbHandlerObj: DbHandler):
         """
@@ -55,7 +55,7 @@ class Employee:
             cursor = Organisation().getOrg(dbHandlerObj)
             print(ps.askOrg)
             for o_id, o_name in cursor:
-                print(ps.printOrg.format(o_id,o_name.upper()))
+                print(ps.clickForThis.format(o_id,o_name.upper()))
             orgNum = int(input())
 
             response =  dbHandlerObj.addEmpToDb(name.lower(), email.lower(), pass_, orgNum)
@@ -299,15 +299,12 @@ class SuperAdmin(Admin):
 class WorkingEmployee(Employee):
 
     def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None, caller=None):
-        print("DEBUG 22")
         super().__init__(name=name, profile=profile, orgId=orgId, empId=empId)
         self.selectProj(dbHandlerObj)
         if caller != 'M':
-            print("DEBUG 44")
             self.employeeOptions(dbHandlerObj)
 
     def selectProj(self, dbhandlerobj):
-        print("DEBUG 33")
         projIds = []
         projData = Project().getProjects(dbhandlerobj, self.empId)
 
@@ -329,9 +326,9 @@ class WorkingEmployee(Employee):
         response = Ticket().createTicket(empId=self.empId, prId=self.prId, dbhandlerobj=dbhandlerobj)
         if caller == 'M': return response
         else:
-            if response == 1: 
+            if response == 0: 
                 self.createTicket(dbhandlerobj)
-            elif response == 0: 
+            elif response == 1: 
                 self.employeeOptions(dbhandlerobj)
 
     def updateTicket(self, dbhandlerobj:DbHandler):
@@ -340,8 +337,13 @@ class WorkingEmployee(Employee):
     def closeTicket(self, dbhandlerobj:DbHandler):
         Ticket().closeTicket()
 
-    def viewTicket(self, dbhandlerobj:DbHandler):
-        Ticket().viewTicket()
+    def viewTicket(self, dbhandlerobj:DbHandler, caller=None):
+        response = Ticket().viewTicket(prId=self.prId, dbhandlerobj=dbhandlerobj)
+        if caller == 'M': return response
+        else:
+            if response == -1: self.createTicket(dbhandlerobj)
+            elif response == 0: self.viewTicket(dbhandlerobj)
+            elif response == 1: self.employeeOptions(dbhandlerobj)
 
     def employeeOptions(self, dbhandlerobj:DbHandler):
         empInput = input(ps.empInput)
@@ -364,9 +366,7 @@ class WorkingEmployee(Employee):
 class Manager(WorkingEmployee):
 
     def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None):
-        print("DEBUG 11")
         super().__init__(dbHandlerObj, name=name, profile=profile, orgId=orgId, empId=empId, caller='M')
-        print("DEBUG 55")
         self.managerOptions(dbHandlerObj)
 
     def logOut(self):
@@ -468,9 +468,9 @@ class Manager(WorkingEmployee):
 
     def createTicket(self, dbhandlerobj):
         response = super().createTicket(dbhandlerobj=dbhandlerobj, caller='M')
-        if response == 0: 
+        if response == 1: 
             self.managerOptions(dbhandlerobj)
-        elif response == 1: 
+        elif response == 0: 
             self.createTicket(dbhandlerobj)
 
     def updateTicket(self, dbhandlerobj):
@@ -480,7 +480,10 @@ class Manager(WorkingEmployee):
         response = super().closeTicket(dbhandlerobj)
 
     def viewTitcket(self, dbhandlerobj):
-        response = super().viewTicket(dbhandlerobj)
+        response = super().viewTicket(dbhandlerobj, caller='M')
+        if response == -1: self.createTicket(dbhandlerobj)
+        elif response == 0: self.viewTicket(dbhandlerobj)
+        elif response == 1: self.managerOptions(dbhandlerobj)
     
     def managerOptions(self, dbhandlerobj : DbHandler):
         manInput = input(ps.manMainMenu)

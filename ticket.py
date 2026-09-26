@@ -2,26 +2,7 @@ from dbHandler import DbHandler
 import printStatements as ps
 from decorator import Decorator
 from project import Project
-
-"""
-create table ticket( 
-    id INTEGER AUTO_INCREMENT UNIQUE,                       - autoassigned
-    ticket_id VARCHAR(255) PRIMARY KEY,                     - to be done by developer
-    pr_id INTEGER NOT NULL,                                 - drop down
-    title VARCHAR(255) NOT NULL,                            - user
-    description TEXT NOT NULL,                              - user
-    ticket_type INT NOT NULL,                               - drop down
-    created_by INT NOT NULL,                                - auto assigned
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,   - autoassigned
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,  - autoassigned
-    resolved_date DATETIME,                                     - autoassigned
-    assignee INT NOT NULL,                                      - autoassigned (but can be changed)
-    priority INT NOT NULL,                                      - drop down
-    due_date DATETIME DEFAULT (CURRENT_TIMESTAMP + INTERVAL 3 DAY) NOT NULL,    - autoassigned
-    ticket_status INT NOT NULL,                                                 - drop down
-)
-
-"""
+import datetime as dt
 
 class Ticket:
 
@@ -38,7 +19,7 @@ class Ticket:
         datas = []
         for DbData in DbDatas:
             datas.append(DbData[0])
-            print("Click {} to select {}".format(DbData[0], DbData[1]))
+            print(ps.clickForThis.format(DbData[0], DbData[1]))
         userInput = input()
 
         try:
@@ -59,9 +40,9 @@ class Ticket:
         return 1
 
     def getTitle(self):
-        title = input("Enter the Title: ")
+        title = input(ps.askTitle)
         if len(title) == 0:
-            print("Title can't be empty... Try Again")
+            print(ps.titleEmpty)
             return 0
         
         self.title = title
@@ -73,11 +54,11 @@ class Ticket:
             return -1
 
         empIds = []
-        print("Whom do you want to select as assignee??...")
+        print(ps.askAssignee)
         for emp in projEmpData:
             if emp[0] != self.empId:
                 empIds.append(emp[0])
-                print("Click {} to select {} ({}) as assignee to this ticket".format(emp[0], emp[2], emp[1]))
+                print(ps.selectAssignee.format(emp[0], emp[2], emp[1]))
         userInput = input()
 
         try:
@@ -111,7 +92,7 @@ class Ticket:
             return 0
 
 #  description for the ticket
-        desc = input("Enter the Description: ")
+        desc = input(ps.askDesc)
         if len(desc) == 0:
             desc = None
         self.desc = desc
@@ -124,7 +105,7 @@ class Ticket:
 #  status for the ticket
         response = self.getSuppDetails(dbhandlerobj, what='status')
         if response == 0:
-            print("Invalid Input... Assigning the default status - TO DO")
+            print(ps.invalidStatus)
             self.status = dbhandlerobj.getIndiviadualStatus(status='TO DO')
 
         if self.status == dbhandlerobj.getIndiviadualStatus(status='DONE'):
@@ -132,28 +113,29 @@ class Ticket:
         else: self.resolvedDate = None
 
 #  assignee for the ticket
-        changeAssignee = input("You are the default assignee... Do you want to change the assignee? (y/n)").lower()
+        changeAssignee = input(ps.askChangeAssignee)
+        changeAssignee = changeAssignee.lower()
 
         if changeAssignee == 'y':
             response = self.changeAssignee(dbhandlerobj)
 
             if response == -1:
-                print("No other employee is working on this project. Try adding first... You are assigned as the assignee")
+                print(ps.noEmpForAssignee)
                 self.assignee = empId
 
             elif response == 0:
-                print("\nInvalid Input... You will be default assignee. You can edit it later")
+                print(ps.defaultAssignee)
                 self.assignee = empId
                 
             elif response == 1:
-                print("Successfully changed the assignee")
+                print(ps.assigneeChangeSuccess)
             
         elif changeAssignee == 'n':
-            print("You have selected yourself as the assignee")
+            print(ps.selfAssignee)
             self.assignee = empId
             
         else:
-            print("\nInvalid Input... You will be default assignee. You can edit it later")
+            print(ps.defaultAssignee)
             self.assignee = empId
 
 # ticketId for the ticket
@@ -167,10 +149,10 @@ class Ticket:
         response = dbhandlerobj.createTicketInDb(self.ticketId, self.prId, self.title, self.type, self.createdBy, self.assignee, self.priority, self.status, self.resolvedDate, self.desc)
             
         if response:
-            Decorator().message("Ticket Successfully Created")
+            Decorator().message(ps.ticketSuccess)
             return 1
         else:
-            Decorator().message("Failed to create the ticket, Try again")
+            Decorator().message(ps.ticketFailure)
             return 0
 
     def generateTicketId(self, dbhandlerobj):
@@ -191,12 +173,74 @@ class Ticket:
         ticketId = nameID+numId
         self.ticketId = ticketId
         
-
     def updateTicket():
         pass
 
     def closeTicket():
         pass
 
-    def viewTicket():
-        pass
+    def viewTicket(self, prId, dbhandlerobj:DbHandler):
+        # fetch all the tickets of that project
+        # drop down menu
+        # display
+
+        # return 1 for main menu
+        # return 0 for the same function
+        # return -1 for create ticket function
+
+        allTickets = dbhandlerobj.getAllTickets(prId=prId)
+        if len(allTickets) == 0:
+            y = input(ps.noTicket)
+            if y.lower() == 'y':
+                return -1 # call create ticket
+            else:
+                return 1 # call main menu
+
+        ticketIds = []
+        print(ps.viewTicket)
+        for ticket in allTickets:
+            ticketIds.append(ticket[0])
+            desc = f"{ticket[2][:20]}..." if ticket[2] is not None else ps.noDesc
+            print(ps.selectTicketDisplay.format(ticket[0], ticket[1], desc))
+        userInput = input()
+
+        try:
+            userInput = int(userInput)
+        except:
+            print(ps.invalidInput)
+            return 0
+
+        if userInput not in ticketIds:
+            print(ps.invalidInput)
+            return 0
+
+        self.ticketId = userInput
+
+        response = dbhandlerobj.getTicketDetails(ticketId=self.ticketId)
+        if response is None:
+            print(ps.uunexpected)
+            return 0
+
+        else:
+            self.ticketDisplay(data=response[0])
+            return 1
+
+    def ticketDisplay(self, data):
+        mainMessage = ps.mainDisplay.format(data[2], data[0], data[1])
+        Decorator().message(mainMessage)
+
+        if data[6] is not None:
+            print(f"Description - {data[6].title()}")
+        else:
+            print(ps.noDesc)
+
+        print(ps.tpsDisplay.format(data[3], data[4], data[5]))
+        print(ps.acDisplay.format(data[7], data[8]))
+
+        createdDate = data[9].strftime("%d %b %Y, %I:%M %p")
+        modifiedDate = data[10].strftime("%d %b %Y, %I:%M %p")
+        print(ps.dateDisplay.format(createdDate, modifiedDate))
+
+        if data[11] is not None:
+            resolvedDate = data[11].strftime("%d %b %Y, %I:%M %p")
+            print(ps.resDate.format(resolvedDate))
