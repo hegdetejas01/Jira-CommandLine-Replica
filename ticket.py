@@ -199,7 +199,7 @@ class Ticket:
         ticketIds = []
 
         if caller == 'edit':
-            print("Which ticket do you want to edit? ")
+            print(ps.editTicket)
         elif caller  == 'view':
             print(ps.viewTicket)
 
@@ -222,11 +222,11 @@ class Ticket:
         self.ticketId = userInput
 
         if caller == 'edit':
-            print("Note - You can't edit the title, created by, created date, ticket id, resolved date")
+            print(ps.noteToEdit)
 
         response = dbhandlerobj.getTicketDetails(ticketId=self.ticketId)
         if response is None:
-            print(ps.uunexpected)
+            print(ps.unexpected)
             return 0
 
         else:
@@ -252,40 +252,40 @@ class Ticket:
         self.oldTicketStatus = dbhandlerobj.getIndiviadualStatus(status=data[5])
         respDesc = respStatus = respAssignee = respType = respPrio = respDue = -1
 
-        userinput = input("\nDo you want to edit the description? (y/n) ")
+        userinput = input(ps.editDesc)
         userInputs.append(userinput)
         if userinput.lower() == 'y':
-            newDesc = input("Enter new description: ")
+            newDesc = input(ps.askNewDesc)
             if len(newDesc) == 0:
                 newDesc = None
             self.desc = newDesc
             respDesc = dbhandlerobj.editTicket(self.ticketId, self.desc, what='desc')
             finalResponse[0] = respDesc
 
-        userinput = input("\nDo you want to edit ticket type? (y/n) ")
+        userinput = input(ps.ticketType)
         userInputs.append(userinput)
         if userinput.lower() == 'y':
             self.type = data[3]
             response = self.getSuppDetails(dbhandlerobj, what='type', caller='edit')
             if response == 0:
-                print("Invalid Input... Try again...")
+                print(ps.invalidInput)
                 return 0 # call the same function again
             else: 
                 respType = dbhandlerobj.editTicket(self.ticketId, self.type, what='type')
                 finalResponse[1] = respType
 
-        userinput = input("\nDo you want to change the assignee? (y/n) ")
+        userinput = input(ps.editAssignee)
         userInputs.append(userinput)
         if userinput.lower() == 'y':
             oldAssignee = dbhandlerobj.getEmpId(caller='T', email=data[7])
             response = self.changeAssignee(dbhandlerobj)
 
             if response == -1:
-                print("No other employee is working on this project. Try adding first... Assignee has not been changed...")
+                print(ps.noAssigneeChange)
                 self.assignee = oldAssignee
 
             elif response == 0:
-                print('\nInvalid Input... Assignee Not Changed...')
+                print(ps.invalidAssignee)
                 self.assignee = oldAssignee
                 
             elif response == 1:
@@ -294,23 +294,23 @@ class Ticket:
             respAssignee = dbhandlerobj.editTicket(self.ticketId, self.assignee, what='assignee')
             finalResponse[2] = respAssignee
 
-        userinput = input("\nDo you want to edit the priority of the ticket? (y/n) ")
+        userinput = input(ps.editPriority)
         userInputs.append(userinput)
         if userinput.lower() == 'y':
             response = self.getSuppDetails(dbhandlerobj, what='priority',caller='edit')
             if response == 0:
-                print("Invalid Input... Try again...")
+                print(ps.invalidInput)
                 return 0 # call the same function again
             else: 
                 respPrio = dbhandlerobj.editTicket(self.ticketId, self.priority, what='priority')
                 finalResponse[3]= respPrio
 
-        userinput = input("\nDo you want to change the status of the ticket? (y/n) ")
+        userinput = input(ps.editStatus)
         userInputs.append(userinput)
         if userinput.lower() == 'y':
             response = self.getSuppDetails(dbhandlerobj, what='status', caller='edit')
             if response == 0:
-                print("Invalid Input... Try again...")
+                print(ps.invalidInput)
                 return 0 # call the same function again
             else: 
                 respStatus = dbhandlerobj.editTicket(self.ticketId, self.status, what='status')
@@ -321,16 +321,16 @@ class Ticket:
                     elif self.oldTicketStatus != dbhandlerobj.getIndiviadualStatus('DONE') and self.status == dbhandlerobj.getIndiviadualStatus('DONE') :
                         addResolvedDate = True
 
-        userinput = input("\nDo you want to edit the due date? (y/n) ")
+        userinput = input(ps.editDueDate)
         userInputs.append(userinput)
         if userinput.lower() == 'y':
-            days = input("How many days do you want from the present day? ")
+            days = input(ps.askDays)
             try:
                 self.days = int(days)
                 respDue = dbhandlerobj.editTicket(self.ticketId, days, what='due')
                 finalResponse[5] = respDue
             except:
-                print("Couldn't Update the Due Date... Try Again.....")
+                print(ps.editDueDateFailure)
 
         userChoice = set(userInputs) != {'n'}
 
@@ -352,27 +352,26 @@ class Ticket:
                 if self.desc is not None: respDesc = dbhandlerobj.editTicket(self.ticketId, self.desc, what='desc', why='update')
 
                 print()
-                Decorator().message("Ticket Updated Successfully")
+                Decorator().message(ps.ticketEditSuccess)
                 return 1 # call main menu
             
             else:
 
-                messageMain = "Unable to edit ticket because of "
                 if respType == 0: messageSub = "'TICKET TYPE'"
                 elif respAssignee == 0: messageSub = "'ASSIGNEE'"
                 elif respDesc == 0: messageSub = "'DESCRIPTION'"
                 elif respDue == 0: messageSub = "'DUE DATE'"
                 elif respPrio == 0: messageSub = "'TICKET PRIORITY'"
                 elif respStatus == 0: messageSub = "'TICKET STATUS'"
-                else: messageSub = "'UNKNOWN ERROR'"
+                else: messageSub = ps.unknownError
 
-                finalMessage = messageMain + messageSub
+                finalMessage = ps.messageMain + messageSub
 
                 Decorator().message(finalMessage)
                 return 0 # call the same function
 
         else:
-            Decorator().message("You didn't edit anything... Thanks.")
+            Decorator().message(ps.noEditDone)
             return 0
 
     def updateTicket(self, empId, prId, dbhandlerobj:DbHandler):
@@ -392,7 +391,7 @@ class Ticket:
         print("\n")
 
         if data[6] is not None:
-            print("Description\t\t - {}".format(data[6].title()))
+            print(ps.desc.format(data[6].title()))
         else:
             print(ps.noDesc)
 
