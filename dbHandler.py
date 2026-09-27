@@ -313,7 +313,7 @@ class DbHandler:
             except: return 0
 
     def isManager(self, email):
-        query = "select 1 from employee t1 left join project t2 on t1.emp_id = t2.emp_id where t1.emp_email=%s"
+        query = "select 1 from employee t1 right join project t2 on t1.emp_id = t2.emp_id where t1.emp_email=%s"
 
         self.cursor.execute(query, (email,))
         if self.cursor.fetchone():  return True

@@ -4,6 +4,7 @@ from decorator import Decorator
 from organisation import Organisation
 from project import Project
 from ticket import Ticket
+import sys
 
 
 class Employee:
@@ -32,8 +33,11 @@ class Employee:
     def logOut(self):
         name = self.name
         response = self.exitSession()
-        if response: print(ps.logoutSuccess.format(name))
+        if response: 
+            print(ps.logoutSuccess.format(name))
+
         print("\n\n")
+        sys.exit(0)
 
     def registerEmployee(self, dbHandlerObj: DbHandler):
         """
@@ -62,7 +66,7 @@ class Employee:
 
             if response == 1:
                 print(ps.empRegSuccess)
-                responseAddAdmin = Admin().checkAdmins(email, dbHandlerObj)
+                responseAddAdmin = Admin(caller='R').checkAdmins(email, dbHandlerObj)
                 if responseAddAdmin == 1: 
                     Decorator().message(ps.superAdmRegisterSuccess)
 
@@ -121,10 +125,11 @@ class Employee:
 
 class Admin(Employee):
 
-    def __init__(self, dbHandlerObj:DbHandler ,name=None, profile=None, orgId=None, empId=None, caller=None):
-        super().__init__(name, profile, orgId, empId)
-        if caller != 'S':
-            self.displayAdminMenu(dbHandlerObj)
+    def __init__(self, dbHandlerObj=None ,name=None, profile=None, orgId=None, empId=None, caller=None):
+        if caller != 'R':
+            super().__init__(name, profile, orgId, empId)
+            if caller != 'S':
+                self.displayAdminMenu(dbHandlerObj)
 
     def logOut(self):
         super().logOut()
@@ -308,6 +313,10 @@ class WorkingEmployee(Employee):
         projIds = []
         projData = Project().getProjects(dbhandlerobj, self.empId)
 
+        if len(projData) == 0:
+            print("You are not assigned to any project... Contact your admin... Logging Out... ")
+            self.logOut()
+
         print(ps.projSelect)
         for project in projData:
             projIds.append(project[0])
@@ -319,7 +328,7 @@ class WorkingEmployee(Employee):
             return
         self.prId = prId
 
-    def logout(self):
+    def logOut(self):
         super().logOut()
 
     def createTicket(self, dbhandlerobj:DbHandler, caller=None):

@@ -180,13 +180,6 @@ class Ticket:
         pass
 
     def viewTicket(self, prId, dbhandlerobj:DbHandler):
-        # fetch all the tickets of that project
-        # drop down menu
-        # display
-
-        # return 1 for main menu
-        # return 0 for the same function
-        # return -1 for create ticket function
 
         allTickets = dbhandlerobj.getAllTickets(prId=prId)
         if len(allTickets) == 0:
