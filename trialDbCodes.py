@@ -92,11 +92,11 @@ dbo = DbHandler()
 # dbo.cursor.execute(query,(orgId, ))
 # print(dbo.cursor.fetchall())
 
-email = "gajanan@gmail.com"
-query = "select 1 from employee t1 right join project t2 on t1.emp_id = t2.emp_id where t1.emp_email=%s"
-dbo.cursor.execute(query, (email,))
-if dbo.cursor.fetchone():  print("Present")
-else: print("Not Present")
+# email = "gajanan@gmail.com"
+# query = "select 1 from employee t1 right join project t2 on t1.emp_id = t2.emp_id where t1.emp_email=%s"
+# dbo.cursor.execute(query, (email,))
+# if dbo.cursor.fetchone():  print("Present")
+# else: print("Not Present")
 
 # email = 'tejs@gmail.com'
 # query = "select emp_id from employee where emp_email=%s"

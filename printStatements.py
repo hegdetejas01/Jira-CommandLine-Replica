@@ -105,7 +105,7 @@ removeEmpFromWorkFailure = "Employee with ID {} not present in this project"
 empInput = """
 1. Click 1 to view ticket
 2. Click 2 to create ticket
-3. Click 3 to update ticket
+3. Click 3 to edit ticket
 4. Click 4 to close the ticket
 5. Click 5 to logout
 """
@@ -130,8 +130,8 @@ viewTicket = "Which ticket you want to view?"
 noDesc = "Description Not Available"
 selectTicketDisplay = "Click {} to select Title - {} (desc - {})"
 uunexpected = "Something unexpected happened... Try Again..."
-mainDisplay = "PROJECT NAME = {}\nTICKET ID = {}\nTITLE = {}"
-tpsDisplay = "Type - {}\nPriority - {}\nStatus - {}"
-acDisplay =  "Assignee - {}\nCreated By - {}"
-dateDisplay = "Created Date - {}\nModified Data = {}"
-resDate = "Resolved Date - {}"
+mainDisplay = "PROJECT NAME\t\t = {}\nTICKET ID\t\t = {}\nTITLE\t\t\t = {}"
+tpsDisplay = "Type\t\t\t - {}\nPriority\t\t - {}\nStatus\t\t\t - {}"
+acDisplay =  "Assignee\t\t - {}\nCreated By\t\t - {}"
+dateDisplay = "Created Date\t\t - {}\nModified Data\t\t - {}"
+resDate = "Resolved Date\t\t - {}"

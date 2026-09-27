@@ -340,8 +340,13 @@ class WorkingEmployee(Employee):
             elif response == 1: 
                 self.employeeOptions(dbhandlerobj)
 
-    def updateTicket(self, dbhandlerobj:DbHandler):
-        Ticket().updateTicket()
+    def updateTicket(self, dbhandlerobj:DbHandler, caller=None):
+        response = Ticket().updateTicket(empId=self.empId, prId=self.prId, dbhandlerobj=dbhandlerobj)
+        if caller == 'M': return response
+        else:
+            if response == 1: self.employeeOptions(dbhandlerobj)
+            elif response == 0: self.updateTicket(dbhandlerobj)
+            elif response == -1: self.createTicket(dbhandlerobj)
 
     def closeTicket(self, dbhandlerobj:DbHandler):
         Ticket().closeTicket()
@@ -483,7 +488,10 @@ class Manager(WorkingEmployee):
             self.createTicket(dbhandlerobj)
 
     def updateTicket(self, dbhandlerobj):
-        response = super().updateTicket(dbhandlerobj)
+        response = super().updateTicket(dbhandlerobj, caller='M')
+        if response == 1: self.managerOptions(dbhandlerobj)
+        elif response == 0: self.updateTicket(dbhandlerobj)
+        elif response == -1: self.createTicket(dbhandlerobj)
 
     def closeTicket(self, dbhandlerobj):
         response = super().closeTicket(dbhandlerobj)

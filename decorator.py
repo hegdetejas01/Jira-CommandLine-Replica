@@ -2,9 +2,9 @@
 class Decorator:
     def printMainMessage(func):
         def wrapper(*args):
-            print("************************")
+            print("***********************************************")
             print(func(*args))
-            print("************************")
+            print("***********************************************")
         return wrapper
 
     @printMainMessage
