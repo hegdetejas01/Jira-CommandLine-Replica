@@ -121,10 +121,19 @@ dbo = DbHandler()
 # dbo.cursor.execute(query, (prId, ))
 # print(len(dbo.cursor.fetchall()))
 
-# emp_id = 34
-# query = "select pr_id, pr_name from project where emp_id=%s"
-# dbo.cursor.execute(query, (emp_id, ))
+# empId = 19
+# query = "select t1.pr_id, t1.pr_name from project t1 right join work t2 on t1.pr_id = t2.pr_id where t2.emp_id=%s"
+# dbo.cursor.execute(query, (empId, ))
 # print(dbo.cursor.fetchall())
+
+# prId = 27
+# empId = 37
+# query =  "select 1 from project where pr_id=%s and emp_id=%s"
+# dbo.cursor.execute(query, (prId, empId))
+# if dbo.cursor.fetchone():
+#     print("True")
+# else:
+#     print("False")
 
 # query = "select id from tickets_status where status='TO DO'"
 # dbo.cursor.execute(query)

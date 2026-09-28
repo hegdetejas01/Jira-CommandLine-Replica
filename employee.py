@@ -9,11 +9,12 @@ import sys
 
 class Employee:
 
-    def __init__(self, name=None, profile=None, orgId=None, empId=None):
+    def __init__(self, name=None, profile=None, orgId=None, empId=None, prId=None):
         self.name = name
         self.profile = profile
         self.orgId = orgId
         self.empId = empId
+        self.prId = prId
 
     def setLoginTime(self, email, dbhandlerobj: DbHandler):
         """
@@ -105,13 +106,16 @@ class Employee:
                     Admin(dbHandlerObj=dbHandlerObj, name=email, profile='A', orgId=orgId, empId=empId)
     
                 elif responseAdm == 'E':
-                    isManager = dbHandlerObj.isManager(email)
+                    Decorator().message("Successfully Logged In...")
+                    self.prId = None
+                    isManager, prId = self.selectProj(empId, dbHandlerObj)
+
                     if isManager:
                         Decorator().message(ps.manLoginSuccess.format(email))
-                        Manager(dbHandlerObj=dbHandlerObj, name=email, profile='M', orgId=orgId, empId=empId)
+                        Manager(dbHandlerObj=dbHandlerObj, name=email, profile='M', orgId=orgId, empId=empId, prId=prId)
                     else:
                         Decorator().message(ps.empLoginSuccess.format(email))
-                        WorkingEmployee(dbHandlerObj=dbHandlerObj, name=email, profile='E', orgId=orgId, empId=empId)
+                        WorkingEmployee(dbHandlerObj=dbHandlerObj, name=email, profile='E', orgId=orgId, empId=empId, prId=prId)
 
                 return 1
             
@@ -122,6 +126,45 @@ class Employee:
             Decorator().message(ps.empDoesnotExist)
             return 0
 
+    def selectProj(self, empId, dbhandlerobj):
+        projIds = []
+        projData = Project().getProjects(dbhandlerobj, empId)
+
+        if len(projData) == 0:
+            print("You are not assigned to any project... Contact your admin... Logging Out...")
+            self.logOut()
+
+        print(ps.projSelect)
+        for project in projData:
+            projIds.append(project[0])
+            print(ps.projSelectDetail.format(project[0], project[1]))
+
+        prId = None
+        selectedProj = False
+        count = 0
+        while count != 3:
+            count += 1
+            prId = int(input())
+            if prId not in projIds:
+                print(ps.invalidInput, end=" ")
+                if count!=3: print("Please Try Again...")
+            else:
+                selectedProj = True
+                break
+
+        if count == 3 and selectedProj == False:
+            print("Sorry You Haven't Selected Right Options... Maximum Limit Reached. Try Relogining In...")
+            sys.exit(0)
+        else: print("Project Selection Successfull...")
+
+        if prId is not None:
+            self.prId = prId
+        else: 
+            print(ps.unknownError)
+            sys.exit(0)
+
+        isManager = dbhandlerobj.isManager(empId, self.prId)
+        return isManager, prId
 
 class Admin(Employee):
 
@@ -303,30 +346,10 @@ class SuperAdmin(Admin):
 
 class WorkingEmployee(Employee):
 
-    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None, caller=None):
-        super().__init__(name=name, profile=profile, orgId=orgId, empId=empId)
-        self.selectProj(dbHandlerObj)
+    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None, prId=None, caller=None):
+        super().__init__(name=name, profile=profile, orgId=orgId, empId=empId, prId=prId)
         if caller != 'M':
             self.employeeOptions(dbHandlerObj)
-
-    def selectProj(self, dbhandlerobj):
-        projIds = []
-        projData = Project().getProjects(dbhandlerobj, self.empId)
-
-        if len(projData) == 0:
-            print("You are not assigned to any project... Contact your admin... Logging Out... ")
-            self.logOut()
-
-        print(ps.projSelect)
-        for project in projData:
-            projIds.append(project[0])
-            print(ps.projSelectDetail.format(project[0], project[1]))
-        prId = int(input())
-
-        if prId not in projIds:
-            print(ps.invalidInput)
-            return
-        self.prId = prId
 
     def logOut(self):
         super().logOut()
@@ -384,8 +407,8 @@ class WorkingEmployee(Employee):
 
 class Manager(WorkingEmployee):
 
-    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None):
-        super().__init__(dbHandlerObj, name=name, profile=profile, orgId=orgId, empId=empId, caller='M')
+    def __init__(self, dbHandlerObj:DbHandler, name=None, profile=None, orgId=None, empId=None, prId=None):
+        super().__init__(dbHandlerObj, name=name, profile=profile, orgId=orgId, empId=empId, prId=prId, caller='M')
         self.managerOptions(dbHandlerObj)
 
     def logOut(self):
@@ -461,7 +484,12 @@ class Manager(WorkingEmployee):
                     print(ps.removeEmpFromPrOptions.format(emp[0], emp[2], emp[1], self.prId))
             print(ps.exitClick)
 
-            empToRemove = [int(i) for i in input().strip().split()]
+            userInput = input().strip()
+            if userInput.isalpha():
+                self.managerOptions(dbhandlerobj)
+                return
+            
+            empToRemove = [int(i) for i in userInput.split()]
 
         count = 0
         for emp in empToRemove:
@@ -504,7 +532,7 @@ class Manager(WorkingEmployee):
         elif response == 0: self.closeTicket(dbhandlerobj)
         elif response == -1: self.createTicket(dbhandlerobj)
 
-    def viewTitcket(self, dbhandlerobj):
+    def viewTicket(self, dbhandlerobj):
         response = super().viewTicket(dbhandlerobj, caller='M')
         if response == -1: self.createTicket(dbhandlerobj)
         elif response == 0: self.viewTicket(dbhandlerobj)

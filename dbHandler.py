@@ -267,7 +267,7 @@ class DbHandler:
 
         elif caller == 'M':
             # returns the project for which emp_id is the manager
-            query = "select pr_id, pr_name from project where emp_id=%s"
+            query = "select t1.pr_id, t1.pr_name from project t1 right join work t2 on t1.pr_id = t2.pr_id where t2.emp_id=%s"
             try:
                 self.cursor.execute(query, (empId, ))
                 return self.cursor.fetchall()
@@ -312,10 +312,9 @@ class DbHandler:
                 return 1
             except: return 0
 
-    def isManager(self, email):
-        query = "select 1 from employee t1 right join project t2 on t1.emp_id = t2.emp_id where t1.emp_email=%s"
-
-        self.cursor.execute(query, (email,))
+    def isManager(self, empId, prId):
+        query = "select 1 from project where pr_id=%s and emp_id=%s"
+        self.cursor.execute(query, (prId, empId))
         if self.cursor.fetchone():  return True
         else: return False
 

@@ -70,9 +70,8 @@ class Ticket:
         empIds = []
         print(ps.askAssignee)
         for emp in projEmpData:
-            if emp[0] != self.empId:
-                empIds.append(emp[0])
-                print(ps.selectAssignee.format(emp[0], emp[2], emp[1]))
+            empIds.append(emp[0])
+            print(ps.selectAssignee.format(emp[0], emp[2], emp[1]))
         userInput = input()
 
         try:
