@@ -12,10 +12,18 @@ maxAdmLimit = "Maximum Admin Limit for your Organisation Reached.! Click 1 to ed
 manMainMenu = """
 1. Click 1 to add employees to project
 2. Click 2 to remove employees from project
-3. Click 3 to create ticket
-4. Click 4 to edit ticket
-5. Click 5 to view ticket
-6. Click 6 to Logout
+3. Click 3 to view ticket
+4. Click 4 to create ticket
+5. Click 5 to edit ticket
+6. Click 6 to close ticket
+7. Click 7 to Logout
+"""
+empInput = """
+1. Click 1 to view ticket
+2. Click 2 to create ticket
+3. Click 3 to edit ticket
+4. Click 4 to close the ticket
+5. Click 5 to logout
 """
 superAdmMainMenu = """
 1. Click 1 to assign admins
@@ -102,13 +110,6 @@ manOpsRedirect = "Redirecting to Main Menu due to one or more wrong input..."
 removeEmpFromWork = "\nRemoving Employee {} to the selected project"
 removeEmpFromWorkSuccess = "Employee with ID {} successfully removed to the project"
 removeEmpFromWorkFailure = "Employee with ID {} not present in this project"
-empInput = """
-1. Click 1 to view ticket
-2. Click 2 to create ticket
-3. Click 3 to edit ticket
-4. Click 4 to close the ticket
-5. Click 5 to logout
-"""
 empNotPresentInPr = "No Employees are yet present in the project... Try Adding the employees for the project first"
 removeEmpFromPr = "\nWhom do you want to remove? If there are multiple employee keep it space saperated..."
 removeEmpFromPrOptions = "Click {} to remove {} ({}) from this project (ID = {})"
@@ -141,7 +142,7 @@ noTicket = "There are no tickets created for this project... Want to create one 
 viewTicket = "Which ticket do you want to view?"
 editTicket = "Which ticket do you want to edit?"
 noDesc = "Description Not Available"
-selectTicketDisplay = "Click {} to select Title - {} (desc - {})"
+selectTicketDisplay = "Click {} to select Title - {} (Desc - {})"
 desc = "Description\t\t - {}"
 unexpected = "Something unexpected happened... Try Again..."
 noEditDone = "You didn't edit anything... Thanks."

@@ -348,8 +348,13 @@ class WorkingEmployee(Employee):
             elif response == 0: self.updateTicket(dbhandlerobj)
             elif response == -1: self.createTicket(dbhandlerobj)
 
-    def closeTicket(self, dbhandlerobj:DbHandler):
-        Ticket().closeTicket()
+    def closeTicket(self, dbhandlerobj:DbHandler, caller=None):
+        response = Ticket().closeTicket(empId=self.empId, prId=self.prId, dbhandlerobj=dbhandlerobj)
+        if caller == 'M': return response
+        else:
+            if response == 1: self.employeeOptions(dbhandlerobj)
+            elif response == 0: self.closeTicket(dbhandlerobj)
+            elif response == -1: self.createTicket(dbhandlerobj)
 
     def viewTicket(self, dbhandlerobj:DbHandler, caller=None):
         response = Ticket().viewTicket(prId=self.prId, dbhandlerobj=dbhandlerobj)
@@ -494,7 +499,10 @@ class Manager(WorkingEmployee):
         elif response == -1: self.createTicket(dbhandlerobj)
 
     def closeTicket(self, dbhandlerobj):
-        response = super().closeTicket(dbhandlerobj)
+        response = super().closeTicket(dbhandlerobj, caller='M')
+        if response == 1: self.managerOptions(dbhandlerobj)
+        elif response == 0: self.closeTicket(dbhandlerobj)
+        elif response == -1: self.createTicket(dbhandlerobj)
 
     def viewTitcket(self, dbhandlerobj):
         response = super().viewTicket(dbhandlerobj, caller='M')
@@ -512,13 +520,16 @@ class Manager(WorkingEmployee):
             self.removeEmpFromProj(dbhandlerobj)
 
         elif manInput == '3':
-            self.createTicket(dbhandlerobj)
+            self.viewTicket(dbhandlerobj)
             
         elif manInput == '4':
-            self.updateTicket(dbhandlerobj)
+            self.createTicket(dbhandlerobj)
 
         elif manInput == '5':
-            self.viewTitcket(dbhandlerobj)
+            self.updateTicket(dbhandlerobj)
 
         elif manInput == '6':
+            self.closeTicket(dbhandlerobj)
+
+        elif manInput == '7':
             self.logOut()

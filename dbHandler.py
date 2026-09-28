@@ -414,7 +414,7 @@ class DbHandler:
 
         try:
             self.cursor.execute(query, (data, ticketId))
-            if why == 'update':
+            if why == 'update' or why == 'close':
                 self.conn.commit()
             return 1
         except Exception as e:

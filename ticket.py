@@ -20,7 +20,7 @@ class Ticket:
         self.days = None
         self.assignee = None
 
-    def getSuppDetails(self, dbhandlerobj, what=None, caller=None):
+    def getSuppDetails(self, dbhandlerobj:DbHandler, what=None, caller=None):
         printDict = {
             'priority':'\nWhat is the priority of the ticket',
             'type':'\nWhat type of ticket you want to create...',
@@ -179,10 +179,10 @@ class Ticket:
 
         lastId = dbhandlerobj.getLastTicketId()
         if lastId is not None:
-            num = lastId[0]
+            num = lastId[0]+1
             numId = f"{num:04d}"
         else:
-            numId = "0000"
+            numId = "0001"
 
         ticketId = nameID+numId
         self.ticketId = ticketId
@@ -202,6 +202,8 @@ class Ticket:
             print(ps.editTicket)
         elif caller  == 'view':
             print(ps.viewTicket)
+        elif caller == 'close':
+            print("Which ticket do you want to close?")
 
         for ticket in allTickets:
             ticketIds.append(ticket[0])
@@ -231,12 +233,15 @@ class Ticket:
 
         else:
             if caller == 'view':
-                self.ticketDisplay(data=response[0])
-                return 1
+                response = self.ticketDisplay(data=response[0])
 
             elif caller == 'edit':
                 response = self.editTicket(data=response[0], dbhandlerobj=dbhandlerobj)
-                return response
+
+            elif caller == 'close':
+                response = self.changeStatus(data=response[0], dbhandlerobj=dbhandlerobj)
+
+            return response
 
     def editTicket(self, data, dbhandlerobj:DbHandler):
 
@@ -407,6 +412,33 @@ class Ticket:
             print(ps.resDate.format(resolvedDate))
 
         print("\n\n")
+        return 1
 
-    def closeTicket():
-        pass
+    def closeTicket(self, empId, prId, dbhandlerobj:DbHandler):
+        self.empId = empId
+        self.prId = prId
+        response = self.getTicketDeatils(prId=prId, caller='close', dbhandlerobj=dbhandlerobj)
+        return response
+
+    def changeStatus(self, data, dbhandlerobj:DbHandler):
+
+        self.ticketId = data[0]
+
+        if data[5] == 'DONE':
+            print("Ticket is already closed")
+            return 1
+        
+        else:
+            userInput = input("\nAre you sure you want to close the ticket with 'title - {}' (ID - {}) (y/n)? ".format(data[1].capitalize(), data[0]))
+            if userInput.lower() == 'y':
+                respStatus = dbhandlerobj.editTicket(ticketId=self.ticketId, data=dbhandlerobj.getIndiviadualStatus('DONE'), what='status', why='close')
+                if respStatus:
+                    dbhandlerobj.changeDate(self.ticketId, which='r', what='add')
+                    print("\nTicket Closed Successfully")
+                    return 1
+                else:
+                    print("Unable to Close the ticket... Try Again")
+                    return 0
+            else:
+                print("Ticket has not been closed as per user's request...")
+                return 0
