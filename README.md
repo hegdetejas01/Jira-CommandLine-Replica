@@ -169,7 +169,7 @@ Organisation Registration
 
 
 
- ## 🛠️ Skills & Technologies Used
+## 🛠️ Skills & Technologies Used
 
 ### 💻 Programming
 
