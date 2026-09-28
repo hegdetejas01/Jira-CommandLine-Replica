@@ -55,7 +55,6 @@ Responsibilities and permissions include:
 - Assign Admins within the organisation
 - Edit project information
 - Remove Admins from the organisation
-- Manage organisation-level administration
 
 The first registered employee of an organisation is automatically assigned the Super Admin role.
 
@@ -123,8 +122,7 @@ Each ticket can contain information such as:
 - Due date
 - Project
 - Other relevant tracking information
-
-Tickets can be modified as the project progresses.
+- 
 
 ### Ticket Types
 
