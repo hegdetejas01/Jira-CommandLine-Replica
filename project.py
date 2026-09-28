@@ -40,7 +40,7 @@ class Project:
                 projResponse = dbhandlerobj.createProjectinDb(proName, int(i))
                 if projResponse: 
                     if dbhandlerobj.addProjToWork(int(i), proName):
-                        print(ps.proSuccessToDb) 
+                        Decorator().message(ps.proSuccessToDb) 
                         # return 1 # call mainmenu
                         return 1
                     else:
@@ -57,7 +57,7 @@ class Project:
                         return 0
                         # return 0 - to call create project
                 else: 
-                    print(ps.proFailedToDb) 
+                    Decorator().message(ps.proFailedToDb) 
                     # return 0 # again call create project
                     return 0
 
@@ -134,17 +134,35 @@ class Project:
                                 
                         else:
                             newManId = None
+                            print(ps.returnToMainMenu)
+                            return 1
 
                         projResponse = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=newProjName, newManId=newManId)
 
-
                         workResponse = 0
                         if projResponse == 1 and newManId is not None:
-                            # edit the details in the work table
-                            workResponse = dbhandlerobj.editWorkEmp(prId=self.prId, newEmpId=newManId, oldEmpId=self.manId)
+                            
+                            checkCombination = dbhandlerobj.checkEmpProjCombo(self.prId, newManId)
+                            userInput = input(ps.keepRemoveOldMan)
+                            try:
+                                userInput = int(userInput)
+                            except:
+                                userInput = 2
 
-                        if projResponse and workResponse:
-                            print(ps.projEditSuccess)
+                            if checkCombination == False:
+                                workResponse = dbhandlerobj.editWorkEmp(prId=self.prId, newEmpId=newManId, oldEmpId=self.manId)
+
+                            if userInput == 1: 
+                                currentManager = project[3]
+                                dbhandlerobj.removeCombo(currentManager, self.prId)
+
+                        if checkCombination == False:
+                            if projResponse and workResponse:
+                                Decorator().message(ps.projEditSuccess)
+                                return 1
+
+                        elif checkCombination == True and projResponse:
+                            Decorator().message(ps.projEditSuccess)
                             return 1
                         # 1 if addition is successfull - call main menu
                         # 0 if not edited in db - call edit function
@@ -161,14 +179,14 @@ class Project:
                                 revertResponse = dbhandlerobj.editProjectInDb(prId=self.prId, newProjName=self.prName, newManId=self.manId)
 
                             if revertResponse == 1:
-                                print("Unable to change the manager... Contact your Admin...")
+                                print(ps.contactAdmin)
                                 return 1
                             
                             # delete the changes
                             return 0
 
                         else:
-                            print(ps.projEditFailed)
+                            Decorator().message(ps.projEditFailed)
                             return 0 # call edit funtion
 
     def getProjects(self, dbhandlerobj:DbHandler, empId):

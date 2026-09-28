@@ -141,7 +141,7 @@ class Ticket:
                 self.assignee = empId
                 
             elif response == 1:
-                print(ps.assigneeChangeSuccess)
+                Decorator().message(ps.assigneeChangeSuccess)
             
         elif changeAssignee == 'n':
             print(ps.selfAssignee)
@@ -293,7 +293,7 @@ class Ticket:
                 self.assignee = oldAssignee
                 
             elif response == 1:
-                print(ps.assigneeChangeSuccess)
+                Decorator().message(ps.assigneeChangeSuccess)
 
             respAssignee = dbhandlerobj.editTicket(self.ticketId, self.assignee, what='assignee')
             finalResponse[2] = respAssignee
@@ -334,7 +334,7 @@ class Ticket:
                 respDue = dbhandlerobj.editTicket(self.ticketId, days, what='due')
                 finalResponse[5] = respDue
             except:
-                print(ps.editDueDateFailure)
+                Decorator().message(ps.editDueDateFailure)
 
         userChoice = set(userInputs) != {'n'}
 
@@ -433,10 +433,10 @@ class Ticket:
                 respStatus = dbhandlerobj.editTicket(ticketId=self.ticketId, data=dbhandlerobj.getIndiviadualStatus('DONE'), what='status', why='close')
                 if respStatus:
                     dbhandlerobj.changeDate(self.ticketId, which='r', what='add')
-                    print(ps.ticketCloseSuccess)
+                    Decorator().message(ps.ticketCloseSuccess)
                     return 1
                 else:
-                    print(ps.ticketCloseFail)
+                    Decorator().message(ps.ticketCloseFail)
                     return 0
             else:
                 print(ps.ticketNotClosed)

@@ -15,7 +15,7 @@ class Organisation:
             print(ps.orgExists)
             return 1
         elif response == -1:
-            print(ps.orgAddFailure)
+            Decorator().message(ps.orgAddFailure)
             return 0
         elif response == 1:
             Decorator().message(ps.orgAddSuccess)

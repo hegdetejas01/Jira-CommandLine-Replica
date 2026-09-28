@@ -35,7 +35,7 @@ class Employee:
         name = self.name
         response = self.exitSession()
         if response: 
-            print(ps.logoutSuccess.format(name))
+            Decorator().message(ps.logoutSuccess.format(name))
 
         print("\n\n")
         sys.exit(0)
@@ -66,7 +66,7 @@ class Employee:
             response =  dbHandlerObj.addEmpToDb(name.lower(), email.lower(), pass_, orgNum)
 
             if response == 1:
-                print(ps.empRegSuccess)
+                Decorator().message(ps.empRegSuccess)
                 responseAddAdmin = Admin(caller='R').checkAdmins(email, dbHandlerObj)
                 if responseAddAdmin == 1: 
                     Decorator().message(ps.superAdmRegisterSuccess)
@@ -74,7 +74,7 @@ class Employee:
                 return 1
             
             elif response == 0:
-                print(ps.empRegFailed)
+                Decorator().message(ps.empRegFailed)
                 return 0
 
     def loginEmployee(self, dbHandlerObj: DbHandler):
@@ -155,7 +155,7 @@ class Employee:
         if count == 3 and selectedProj == False:
             print(ps.maxLimitReached)
             sys.exit(0)
-        else: print(ps.projSelectSuccess)
+        else: Decorator().message(ps.projSelectSuccess)
 
         if prId is not None:
             self.prId = prId
@@ -309,7 +309,7 @@ class SuperAdmin(Admin):
 
                 response = dbhandlerobj.addAdms(chooseAdm)
                 if response:
-                    print(ps.adminSuccessAdd.format(chooseAdm, self.orgId))
+                    Decorator().message(ps.adminSuccessAdd.format(chooseAdm, self.orgId))
 
             self.displaySuperMenu(dbhandlerobj)
 
@@ -333,7 +333,7 @@ class SuperAdmin(Admin):
                 if int(i) in admIds:
                     response = dbhandlerobj.removeAdm(admId=int(i))
                     if response:
-                        print(ps.admRemoveSuccess.format(i))
+                        Decorator().message(ps.admRemoveSuccess.format(i))
                     else: print()
                 else:
                     print(ps.invalidInput)
@@ -450,9 +450,9 @@ class Manager(WorkingEmployee):
                 print(ps.addEmpToWork.format(emp))
                 response = dbhandlerobj.addEmpToWork(prId = self.prId, empId = emp)
                 if response:
-                    print(ps.addEmpToWorkSuccess.format(emp))
+                    Decorator().message(ps.addEmpToWorkSuccess.format(emp))
                 else:
-                    print(ps.addEmpToWorkFailure.format(emp))
+                    Decorator().message(ps.addEmpToWorkFailure.format(emp))
 
         if count != 0:
             print(ps.manOpsRedirect)
@@ -503,9 +503,9 @@ class Manager(WorkingEmployee):
                 empIds.remove(emp)
 
                 if response:
-                    print(ps.removeEmpFromWorkSuccess.format(emp))
+                    Decorator().message(ps.removeEmpFromWorkSuccess.format(emp))
                 else:
-                    print(ps.removeEmpFromWorkFailure.format(emp))
+                    Decorator().message(ps.removeEmpFromWorkFailure.format(emp))
 
         if count != 0:
             print(ps.manOpsRedirect)

@@ -274,6 +274,11 @@ class DbHandler:
             except:
                 return None
 
+    def removeCombo(self, empId, prId):
+        query = "delete from work where emp_id = %s and pr_id = %s"
+        self.cursor.execute(query, (empId, prId))
+        self.conn.commit()
+
     def editWorkEmp(self, prId, oldEmpId, newEmpId):
         query = "update work set emp_id = %s where pr_id=%s and emp_id=%s"
         try:
@@ -311,6 +316,12 @@ class DbHandler:
                 self.conn.commit()
                 return 1
             except: return 0
+
+    def checkEmpProjCombo(self, prId, newManId):
+        query = "select 1 from work where pr_id = %s and emp_id = %s"
+        self.cursor.execute(query, (prId, newManId))
+        if self.cursor.fetchone():  return True
+        else: return False
 
     def isManager(self, empId, prId):
         query = "select 1 from project where pr_id=%s and emp_id=%s"

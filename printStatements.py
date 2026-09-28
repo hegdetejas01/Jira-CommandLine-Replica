@@ -1,4 +1,4 @@
-welcomeMessage = "Welcome To Jira"
+welcomeMessage = "\t\tWelcome To Jira"
 clickExitMessage = "Click any charater to Exit"
 getOrgName = "Enter the name of the organisation to register: "
 adminSuccessAdd = "Employee with ID = {} Successfully added as Admin for Org Id = {}"
@@ -165,3 +165,9 @@ closeConfirmation = "\nAre you sure you want to close the ticket with 'title - {
 ticketCloseSuccess = "\nTicket Closed Successfully"
 ticketCloseFail = "Unable to Close the ticket... Try Again"
 ticketNotClosed = "Ticket has not been closed as per user's request..."
+contactAdmin = "Unable to change the manager... Contact your Admin..."
+keepRemoveOldMan = """
+1. Click 1 to remove the current manager from project
+2. Click 2 to keep the current manager from project (default)
+"""
+returnToMainMenu = "Returning for main menu..."

@@ -19,10 +19,10 @@ class MainProgram:
         self.LoggedIn = False
 
         if self.dbObj.conn == None:
-            print(ps.dbConnectionFailure)
+            Decorator().mainLetter(ps.dbConnectionFailure)
             exit()
 
-        self.decoratorObj.message(ps.welcomeMessage)
+        self.decoratorObj.mainLetter(ps.welcomeMessage)
         self.__firstInput()
 
     def __firstInput(self):
