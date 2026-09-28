@@ -202,7 +202,7 @@ class Ticket:
         elif caller  == 'view':
             print(ps.viewTicket)
         elif caller == 'close':
-            print("Which ticket do you want to close?")
+            print(ps.askClose)
 
         for ticket in allTickets:
             ticketIds.append(ticket[0])
@@ -424,20 +424,20 @@ class Ticket:
         self.ticketId = data[0]
 
         if data[5] == 'DONE':
-            print("Ticket is already closed")
+            print(ps.ticketAlreadyClosed)
             return 1
         
         else:
-            userInput = input("\nAre you sure you want to close the ticket with 'title - {}' (ID - {}) (y/n)? ".format(data[1].capitalize(), data[0]))
+            userInput = input(ps.closeConfirmation.format(data[1].capitalize(), data[0]))
             if userInput.lower() == 'y':
                 respStatus = dbhandlerobj.editTicket(ticketId=self.ticketId, data=dbhandlerobj.getIndiviadualStatus('DONE'), what='status', why='close')
                 if respStatus:
                     dbhandlerobj.changeDate(self.ticketId, which='r', what='add')
-                    print("\nTicket Closed Successfully")
+                    print(ps.ticketCloseSuccess)
                     return 1
                 else:
-                    print("Unable to Close the ticket... Try Again")
+                    print(ps.ticketCloseFail)
                     return 0
             else:
-                print("Ticket has not been closed as per user's request...")
+                print(ps.ticketNotClosed)
                 return 0

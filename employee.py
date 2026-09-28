@@ -106,7 +106,7 @@ class Employee:
                     Admin(dbHandlerObj=dbHandlerObj, name=email, profile='A', orgId=orgId, empId=empId)
     
                 elif responseAdm == 'E':
-                    Decorator().message("Successfully Logged In...")
+                    Decorator().message(ps.loginSuccess)
                     self.prId = None
                     isManager, prId = self.selectProj(empId, dbHandlerObj)
 
@@ -131,7 +131,7 @@ class Employee:
         projData = Project().getProjects(dbhandlerobj, empId)
 
         if len(projData) == 0:
-            print("You are not assigned to any project... Contact your admin... Logging Out...")
+            print(ps.logoutNoProj)
             self.logOut()
 
         print(ps.projSelect)
@@ -147,15 +147,15 @@ class Employee:
             prId = int(input())
             if prId not in projIds:
                 print(ps.invalidInput, end=" ")
-                if count!=3: print("Please Try Again...")
+                if count!=3: print(ps.tryAgain)
             else:
                 selectedProj = True
                 break
 
         if count == 3 and selectedProj == False:
-            print("Sorry You Haven't Selected Right Options... Maximum Limit Reached. Try Relogining In...")
+            print(ps.maxLimitReached)
             sys.exit(0)
-        else: print("Project Selection Successfull...")
+        else: print(ps.projSelectSuccess)
 
         if prId is not None:
             self.prId = prId
