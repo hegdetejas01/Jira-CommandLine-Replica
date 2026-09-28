@@ -168,3 +168,101 @@ Organisation Registration
           │
           ▼
  Assign / Edit / Track Tickets
+
+
+
+ ## 🛠️ Skills & Technologies Used
+
+### 💻 Programming
+
+* **Python**
+* Python Fundamentals
+* Object-Oriented Programming (OOP)
+* Classes and Objects
+* Encapsulation
+* Inheritance
+* Polymorphism
+* Functions and Modular Programming
+* Conditional Statements and Loops
+* Exception Handling
+* Application Flow & Logic Building
+
+### 🗄️ Database & SQL
+
+* **MySQL**
+* **SQL**
+* Database Design
+* Relational Database Concepts
+* CRUD Operations
+* Primary Keys & Foreign Keys
+* Table Relationships
+* Data Retrieval & Manipulation
+* Database-driven Application Development
+
+### 🔐 Application Design
+
+* **Role-Based Access Control (RBAC)**
+* User & Role Management
+* Organisation Management
+* Project Management
+* Ticket / Issue Management
+* Business Logic Implementation
+
+### 🖥️ Software Development
+
+* Command-Line Interface (CLI) Application Development
+* Modular Application Design
+* Input Validation
+* Error Handling
+* Workflow Design
+* Connecting Python Applications with MySQL
+
+### 🔧 Version Control & Development Tools
+
+* **Git**
+* **GitHub**
+* Version Control
+* Code Commit & History Management
+
+### 📌 Core Skill Stack
+
+```text
+Python
+  │
+  ├── OOP
+  ├── Application Logic
+  ├── CLI Development
+  └── MySQL Connectivity
+          │
+          ▼
+        MySQL
+          │
+          ├── SQL
+          ├── Database Design
+          └── CRUD Operations
+          │
+          ▼
+   Project Management System
+          │
+          ├── Organisation Management
+          ├── Role-Based Access Control
+          ├── Project Management
+          ├── Team Management
+          └── Ticket Management
+          │
+          ▼
+     Git & GitHub
+```
+
+### 🧰 Technology Stack
+
+| Category              | Technologies / Skills                            |
+| --------------------- | ------------------------------------------------ |
+| Language              | Python                                           |
+| Programming           | OOP, Functions, Control Flow, Exception Handling |
+| Database              | MySQL                                            |
+| Query Language        | SQL                                              |
+| Application Type      | Command-Line Interface (CLI)                     |
+| Architecture Concepts | RBAC, CRUD, Entity Relationships                 |
+| Version Control       | Git                                              |
+| Repository Hosting    | GitHub                                           |
