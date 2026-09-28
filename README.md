@@ -261,6 +261,6 @@ Python
 | Database              | MySQL                                            |
 | Query Language        | SQL                                              |
 | Application Type      | Command-Line Interface (CLI)                     |
-| Architecture Concepts | RBAC, CRUD, Entity Relationships                 |
+| Architecture Concepts | RBAC, CRUD               |
 | Version Control       | Git                                              |
 | Repository Hosting    | GitHub                                           |
